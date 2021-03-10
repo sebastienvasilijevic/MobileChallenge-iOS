@@ -1,0 +1,16 @@
+query Artists($search: String!, $first: Int!, $after: String) {
+  search {
+    artists(query: $search, first: $first, after: $after) {
+      nodes {
+        ...ArtistBasicFragment
+      }
+    }
+  }
+}
+
+fragment ArtistBasicFragment on Artist {
+  id
+  name
+  disambiguation
+}
+

@@ -1,0 +1,9 @@
+.DS_Store
+/.build
+/Packages
+/*.xcodeproj
+xcuserdata/
+
+# JS code that is currently used for Codegen and can be easily downloaded.
+# No need to store in the repo.
+ApolloCLI/
