@@ -1,0 +1,10 @@
+/* 
+  Localizable.strings
+  MobileChallenge
+
+  Created by VASILIJEVIC Sebastien on 16/04/2021.
+  
+*/
+
+"button_done" = "Done";
+"artists_list_searchBar_placeholder" = "Search for artists";
