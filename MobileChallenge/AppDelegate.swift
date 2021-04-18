@@ -32,10 +32,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         (UITabBar.appearance()).isTranslucent = false
         
         let artistsListVC: ArtistsViewController = .init()
-        let artistsListNavController: UINavigationController = .init(rootViewController: artistsListVC)
+        let artistsListNavController: MainNavigationController = .init(rootViewController: artistsListVC)
         
         let bookmarksVC: BookmarksViewController = .init()
-        let bookmarksNavController: UINavigationController = .init(rootViewController: bookmarksVC)
+        let bookmarksNavController: MainNavigationController = .init(rootViewController: bookmarksVC)
         
         self.tabBarController = .init()
         self.tabBarController.setViewControllers([artistsListNavController, bookmarksNavController], animated: false)

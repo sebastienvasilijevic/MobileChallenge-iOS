@@ -27,6 +27,7 @@ public class ArtistLocal: NSManagedObject {
         disambiguation = artist.disambiguation
         country = artist.country
         type = artist.type
+        gender = artist.gender
         mediaImagesArray = artist.mediaWikiImages
     }
 }

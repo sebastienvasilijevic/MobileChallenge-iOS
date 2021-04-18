@@ -27,6 +27,9 @@
 		E205FA0B2629FAC40080A5F5 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = E205FA0A2629FAC40080A5F5 /* SnapKit */; };
 		E205FA0E262A0AC10080A5F5 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E205FA0D262A0AC10080A5F5 /* MainViewController.swift */; };
 		E205FA15262A0B790080A5F5 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E205FA14262A0B790080A5F5 /* Constants.swift */; };
+		E2A0C0F9262CD6F70091E6EC /* Cosmos in Frameworks */ = {isa = PBXBuildFile; productRef = E2A0C0F8262CD6F70091E6EC /* Cosmos */; };
+		E2A0C0FC262CDA500091E6EC /* UIImageView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A0C0FB262CDA500091E6EC /* UIImageView+Extension.swift */; };
+		E2A0C103262CE6F20091E6EC /* LoadingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2A0C102262CE6F20091E6EC /* LoadingOverlayView.swift */; };
 		E2CE9532262A2180008A6959 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = E2CE9531262A2180008A6959 /* Localizable.strings */; };
 		E2CE9537262A21D0008A6959 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CE9536262A21D0008A6959 /* String+Extension.swift */; };
 		E2CE953B262A3DB1008A6959 /* Artist.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CE953A262A3DB1008A6959 /* Artist.swift */; };
@@ -41,6 +44,12 @@
 		E2DFBB36262BC103006FAAD6 /* ArtistLocal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DFBB35262BC103006FAAD6 /* ArtistLocal.swift */; };
 		E2DFBB3C262BDBC0006FAAD6 /* ArtistsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DFBB3B262BDBC0006FAAD6 /* ArtistsData.swift */; };
 		E2DFBB40262BE934006FAAD6 /* BookmarksViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DFBB3F262BE934006FAAD6 /* BookmarksViewController.swift */; };
+		E2DFBB44262C7710006FAAD6 /* CommonArtistListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DFBB43262C7710006FAAD6 /* CommonArtistListViewController.swift */; };
+		E2DFBB4B262C8889006FAAD6 /* BookmarksViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DFBB4A262C8889006FAAD6 /* BookmarksViewModel.swift */; };
+		E2DFBB4F262CA192006FAAD6 /* ArtistDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DFBB4E262CA192006FAAD6 /* ArtistDetailsViewController.swift */; };
+		E2DFBB53262CA291006FAAD6 /* ArtistDetailsPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DFBB52262CA291006FAAD6 /* ArtistDetailsPageViewController.swift */; };
+		E2DFBB58262CA85B006FAAD6 /* MainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DFBB57262CA85B006FAAD6 /* MainNavigationController.swift */; };
+		E2DFBB5C262CB61E006FAAD6 /* ArtistDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DFBB5B262CB61E006FAAD6 /* ArtistDetailsViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,6 +68,8 @@
 		E205FA002629DD4D0080A5F5 /* ArtistsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistsViewModel.swift; sourceTree = "<group>"; };
 		E205FA0D262A0AC10080A5F5 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		E205FA14262A0B790080A5F5 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		E2A0C0FB262CDA500091E6EC /* UIImageView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extension.swift"; sourceTree = "<group>"; };
+		E2A0C102262CE6F20091E6EC /* LoadingOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingOverlayView.swift; sourceTree = "<group>"; };
 		E2CE9531262A2180008A6959 /* Localizable.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = Localizable.strings; sourceTree = "<group>"; };
 		E2CE9536262A21D0008A6959 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		E2CE953A262A3DB1008A6959 /* Artist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artist.swift; sourceTree = "<group>"; };
@@ -73,6 +84,12 @@
 		E2DFBB35262BC103006FAAD6 /* ArtistLocal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistLocal.swift; sourceTree = "<group>"; };
 		E2DFBB3B262BDBC0006FAAD6 /* ArtistsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistsData.swift; sourceTree = "<group>"; };
 		E2DFBB3F262BE934006FAAD6 /* BookmarksViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksViewController.swift; sourceTree = "<group>"; };
+		E2DFBB43262C7710006FAAD6 /* CommonArtistListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonArtistListViewController.swift; sourceTree = "<group>"; };
+		E2DFBB4A262C8889006FAAD6 /* BookmarksViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarksViewModel.swift; sourceTree = "<group>"; };
+		E2DFBB4E262CA192006FAAD6 /* ArtistDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistDetailsViewController.swift; sourceTree = "<group>"; };
+		E2DFBB52262CA291006FAAD6 /* ArtistDetailsPageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistDetailsPageViewController.swift; sourceTree = "<group>"; };
+		E2DFBB57262CA85B006FAAD6 /* MainNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavigationController.swift; sourceTree = "<group>"; };
+		E2DFBB5B262CB61E006FAAD6 /* ArtistDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistDetailsViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +99,7 @@
 			files = (
 				E205FA062629F8520080A5F5 /* Kingfisher in Frameworks */,
 				7654354325F8D65800070C3B /* ApolloCodegenLib in Frameworks */,
+				E2A0C0F9262CD6F70091E6EC /* Cosmos in Frameworks */,
 				7654353B25F8D65800070C3B /* ApolloCore in Frameworks */,
 				E205FA0B2629FAC40080A5F5 /* SnapKit in Frameworks */,
 				7654354125F8D65800070C3B /* Apollo in Frameworks */,
@@ -157,6 +175,8 @@
 			isa = PBXGroup;
 			children = (
 				E205FA002629DD4D0080A5F5 /* ArtistsViewModel.swift */,
+				E2DFBB4A262C8889006FAAD6 /* BookmarksViewModel.swift */,
+				E2DFBB5B262CB61E006FAAD6 /* ArtistDetailsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -189,12 +209,21 @@
 			path = Storyboards;
 			sourceTree = "<group>";
 		};
+		E2A0C105262CE6F70091E6EC /* UIView */ = {
+			isa = PBXGroup;
+			children = (
+				E2A0C102262CE6F20091E6EC /* LoadingOverlayView.swift */,
+			);
+			path = UIView;
+			sourceTree = "<group>";
+		};
 		E2CE9535262A21B0008A6959 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				E2CE9536262A21D0008A6959 /* String+Extension.swift */,
 				E2CE954C262B3A82008A6959 /* UISearchBar+Extension.swift */,
 				E2CE9559262B838C008A6959 /* UIControl+Extension.swift */,
+				E2A0C0FB262CDA500091E6EC /* UIImageView+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -212,9 +241,10 @@
 		E2CE953D262A45F2008A6959 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				E2DFBB2E262BB55D006FAAD6 /* Custom */,
+				E2DFBB2E262BB55D006FAAD6 /* Common */,
 				E2CE953E262A4601008A6959 /* Artists */,
 				E2DFBB3E262BE907006FAAD6 /* Bookmarks */,
+				E2DFBB4D262CA175006FAAD6 /* ArtistDetails */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -238,14 +268,15 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
-		E2DFBB2E262BB55D006FAAD6 /* Custom */ = {
+		E2DFBB2E262BB55D006FAAD6 /* Common */ = {
 			isa = PBXGroup;
 			children = (
-				E205FA0D262A0AC10080A5F5 /* MainViewController.swift */,
-				E2CE9544262A9CB3008A6959 /* CustomSearchController.swift */,
-				E2DFBB24262B8FC9006FAAD6 /* ShadowButton.swift */,
+				E2DFBB47262C771F006FAAD6 /* UIViewController */,
+				E2A0C105262CE6F70091E6EC /* UIView */,
+				E2DFBB46262C7716006FAAD6 /* UISearchController */,
+				E2DFBB48262C7725006FAAD6 /* UIButton */,
 			);
-			path = Custom;
+			path = Common;
 			sourceTree = "<group>";
 		};
 		E2DFBB38262BC107006FAAD6 /* API */ = {
@@ -270,6 +301,41 @@
 				E2DFBB3F262BE934006FAAD6 /* BookmarksViewController.swift */,
 			);
 			path = Bookmarks;
+			sourceTree = "<group>";
+		};
+		E2DFBB46262C7716006FAAD6 /* UISearchController */ = {
+			isa = PBXGroup;
+			children = (
+				E2CE9544262A9CB3008A6959 /* CustomSearchController.swift */,
+			);
+			path = UISearchController;
+			sourceTree = "<group>";
+		};
+		E2DFBB47262C771F006FAAD6 /* UIViewController */ = {
+			isa = PBXGroup;
+			children = (
+				E2DFBB57262CA85B006FAAD6 /* MainNavigationController.swift */,
+				E205FA0D262A0AC10080A5F5 /* MainViewController.swift */,
+				E2DFBB43262C7710006FAAD6 /* CommonArtistListViewController.swift */,
+			);
+			path = UIViewController;
+			sourceTree = "<group>";
+		};
+		E2DFBB48262C7725006FAAD6 /* UIButton */ = {
+			isa = PBXGroup;
+			children = (
+				E2DFBB24262B8FC9006FAAD6 /* ShadowButton.swift */,
+			);
+			path = UIButton;
+			sourceTree = "<group>";
+		};
+		E2DFBB4D262CA175006FAAD6 /* ArtistDetails */ = {
+			isa = PBXGroup;
+			children = (
+				E2DFBB52262CA291006FAAD6 /* ArtistDetailsPageViewController.swift */,
+				E2DFBB4E262CA192006FAAD6 /* ArtistDetailsViewController.swift */,
+			);
+			path = ArtistDetails;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -298,6 +364,7 @@
 				7654354225F8D65800070C3B /* ApolloCodegenLib */,
 				E205FA052629F8520080A5F5 /* Kingfisher */,
 				E205FA0A2629FAC40080A5F5 /* SnapKit */,
+				E2A0C0F8262CD6F70091E6EC /* Cosmos */,
 			);
 			productName = TheChallenge;
 			productReference = 7654352125F8D5C800070C3B /* MobileChallenge.app */;
@@ -330,6 +397,7 @@
 				7654353925F8D65800070C3B /* XCRemoteSwiftPackageReference "apollo-ios" */,
 				E205FA042629F8520080A5F5 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				E205FA092629FAC40080A5F5 /* XCRemoteSwiftPackageReference "SnapKit" */,
+				E2A0C0F7262CD6F70091E6EC /* XCRemoteSwiftPackageReference "Cosmos" */,
 			);
 			productRefGroup = 7654352225F8D5C800070C3B /* Products */;
 			projectDirPath = "";
@@ -402,24 +470,32 @@
 			files = (
 				E2DFBB40262BE934006FAAD6 /* BookmarksViewController.swift in Sources */,
 				E2CE9545262A9CB3008A6959 /* CustomSearchController.swift in Sources */,
+				E2A0C0FC262CDA500091E6EC /* UIImageView+Extension.swift in Sources */,
 				E2DFBB36262BC103006FAAD6 /* ArtistLocal.swift in Sources */,
 				E2CE955A262B838C008A6959 /* UIControl+Extension.swift in Sources */,
 				E2CE9540262A462F008A6959 /* ArtistCell.swift in Sources */,
 				E205FA0E262A0AC10080A5F5 /* MainViewController.swift in Sources */,
 				E205F9F92629B4BF0080A5F5 /* Network.swift in Sources */,
 				7654352925F8D5C800070C3B /* ArtistsViewController.swift in Sources */,
+				E2DFBB53262CA291006FAAD6 /* ArtistDetailsPageViewController.swift in Sources */,
+				E2DFBB4F262CA192006FAAD6 /* ArtistDetailsViewController.swift in Sources */,
+				E2DFBB4B262C8889006FAAD6 /* BookmarksViewModel.swift in Sources */,
 				E2CE9537262A21D0008A6959 /* String+Extension.swift in Sources */,
 				7654352525F8D5C800070C3B /* AppDelegate.swift in Sources */,
+				E2A0C103262CE6F20091E6EC /* LoadingOverlayView.swift in Sources */,
 				E2CE954D262B3A82008A6959 /* UISearchBar+Extension.swift in Sources */,
 				E2DFBB32262BB65C006FAAD6 /* MobileChallenge.xcdatamodeld in Sources */,
 				E2CE9549262AB6AF008A6959 /* LoadingReusableView.swift in Sources */,
 				E2DFBB3C262BDBC0006FAAD6 /* ArtistsData.swift in Sources */,
 				7654355B25F8DF8500070C3B /* API.swift in Sources */,
 				7654352725F8D5C800070C3B /* SceneDelegate.swift in Sources */,
+				E2DFBB44262C7710006FAAD6 /* CommonArtistListViewController.swift in Sources */,
 				E2DFBB25262B8FC9006FAAD6 /* ShadowButton.swift in Sources */,
 				E205FA012629DD4D0080A5F5 /* ArtistsViewModel.swift in Sources */,
 				E2CE953B262A3DB1008A6959 /* Artist.swift in Sources */,
+				E2DFBB5C262CB61E006FAAD6 /* ArtistDetailsViewModel.swift in Sources */,
 				E205FA15262A0B790080A5F5 /* Constants.swift in Sources */,
+				E2DFBB58262CA85B006FAAD6 /* MainNavigationController.swift in Sources */,
 				E2DFBB2C262B978D006FAAD6 /* DB.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -648,6 +724,14 @@
 				minimumVersion = 5.0.1;
 			};
 		};
+		E2A0C0F7262CD6F70091E6EC /* XCRemoteSwiftPackageReference "Cosmos" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/Cosmos.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 23.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -685,6 +769,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E205FA092629FAC40080A5F5 /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		E2A0C0F8262CD6F70091E6EC /* Cosmos */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E2A0C0F7262CD6F70091E6EC /* XCRemoteSwiftPackageReference "Cosmos" */;
+			productName = Cosmos;
 		};
 /* End XCSwiftPackageProductDependency section */
 

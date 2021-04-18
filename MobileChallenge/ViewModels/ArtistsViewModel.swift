@@ -25,11 +25,6 @@ class ArtistsViewModel: NSObject {
         super.init()
     }
     
-    init(artists: [Artist]) {
-        super.init()
-        self.artists = artists
-    }
-    
     public func fetchArtists(query: String?, first: Int, newList: Bool, completion: @escaping (GraphQLResult<ArtistsQuery.Data>?, Error?) -> Void) {
         self.cancellableFetch?.cancel()
         self.cancellableFetch = nil
@@ -46,18 +41,16 @@ class ArtistsViewModel: NSObject {
         self.cancellableFetch = Network.shared.apollo.fetch(query: artistsQuery) { result in
             switch result {
             case .success(let graphQLResult):
-                if let pageInfo = graphQLResult.data?.search?.artists?.pageInfo {
-                    self.hasNextPage = pageInfo.hasNextPage
-                    self.lastCursorId = pageInfo.endCursor
-                }
-                if let artistsNodes = graphQLResult.data?.search?.artists?.nodes {
-                    var mArtists: [Artist] = []
-                    for artistNode in artistsNodes.compactMap({ $0 }) {
-                        mArtists.append(.init(apiArtistNode: artistNode))
-                    }
-                    self.artists.append(contentsOf: mArtists)
-                }
                 DispatchQueue.main.async {
+                    if let pageInfo = graphQLResult.data?.search?.artists?.pageInfo {
+                        self.hasNextPage = pageInfo.hasNextPage
+                        self.lastCursorId = pageInfo.endCursor
+                    }
+                    if let artistsNodes = graphQLResult.data?.search?.artists?.nodes {
+                        // Convert apiArtist to project object Artist
+                        let mArtists: [Artist] = artistsNodes.compactMap({ $0 }).map({ Artist(apiArtistNode: $0) })
+                        self.artists.append(contentsOf: mArtists)
+                    }
                     completion(graphQLResult, nil)
                 }
             case .failure(let error):

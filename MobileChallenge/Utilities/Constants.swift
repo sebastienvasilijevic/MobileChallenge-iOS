@@ -22,7 +22,6 @@ struct kMC {
     struct Colors {
         static let main = UIColor(named: "mainColor")!
         static let highlight = UIColor(named: "highlightColor")!
-        static let orange = UIColor(named: "orangeColor")!
         
         struct Text {
             static let primary = UIColor(named: "textColor")!
@@ -33,6 +32,7 @@ struct kMC {
         struct Background {
             static let primary = UIColor(named: "backgroundColor")!
             static let secondary = UIColor(named: "secondaryBackgroundColor")!
+            static let primaryReverse = UIColor(named: "backgroundReverseColor")!
         }
     }
     
@@ -57,8 +57,8 @@ struct kMC {
     }
     
     /// Differents date formats
-    struct DateFormat {
-        static let api: String = "yyyy-MM-dd'T'HH:mm:ssZ"
-        static let readable: String = "dd MMM yyyy à HH:mm"
-    }
+//    struct DateFormat {
+//        static let api: String = "yyyy-MM-dd'T'HH:mm:ssZ"
+//        static let readable: String = "dd MMM yyyy à HH:mm"
+//    }
 }

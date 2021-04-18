@@ -15,7 +15,7 @@ public final class ArtistsQuery: GraphQLQuery {
           __typename
           nodes {
             __typename
-            ...ArtistFragment
+            ...ArtistBasicFragment
           }
           pageInfo {
             __typename
@@ -29,7 +29,7 @@ public final class ArtistsQuery: GraphQLQuery {
 
   public let operationName: String = "Artists"
 
-  public var queryDocument: String { return operationDefinition.appending("\n" + ArtistFragment.fragmentDefinition) }
+  public var queryDocument: String { return operationDefinition.appending("\n" + ArtistBasicFragment.fragmentDefinition) }
 
   public var search: String
   public var first: Int
@@ -176,8 +176,8 @@ public final class ArtistsQuery: GraphQLQuery {
               GraphQLField("name", type: .scalar(String.self)),
               GraphQLField("disambiguation", type: .scalar(String.self)),
               GraphQLField("type", type: .scalar(String.self)),
+              GraphQLField("gender", type: .scalar(String.self)),
               GraphQLField("country", type: .scalar(String.self)),
-              GraphQLField("tags", type: .object(Tag.selections)),
               GraphQLField("mediaWikiImages", type: .nonNull(.list(.object(MediaWikiImage.selections)))),
             ]
           }
@@ -188,8 +188,8 @@ public final class ArtistsQuery: GraphQLQuery {
             self.resultMap = unsafeResultMap
           }
 
-          public init(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, country: String? = nil, tags: Tag? = nil, mediaWikiImages: [MediaWikiImage?]) {
-            self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "country": country, "tags": tags.flatMap { (value: Tag) -> ResultMap in value.resultMap }, "mediaWikiImages": mediaWikiImages.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }])
+          public init(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, gender: String? = nil, country: String? = nil, mediaWikiImages: [MediaWikiImage?]) {
+            self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "gender": gender, "country": country, "mediaWikiImages": mediaWikiImages.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }])
           }
 
           public var __typename: String {
@@ -251,6 +251,17 @@ public final class ArtistsQuery: GraphQLQuery {
             }
           }
 
+          /// Whether a person or character identifies as male, female, or
+          /// neither. Groups do not have genders.
+          public var gender: String? {
+            get {
+              return resultMap["gender"] as? String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "gender")
+            }
+          }
+
           /// The country with which an artist is primarily identified. It
           /// is often, but not always, its birth/formation country.
           public var country: String? {
@@ -259,16 +270,6 @@ public final class ArtistsQuery: GraphQLQuery {
             }
             set {
               resultMap.updateValue(newValue, forKey: "country")
-            }
-          }
-
-          /// A list of tags linked to this entity.
-          public var tags: Tag? {
-            get {
-              return (resultMap["tags"] as? ResultMap).flatMap { Tag(unsafeResultMap: $0) }
-            }
-            set {
-              resultMap.updateValue(newValue?.resultMap, forKey: "tags")
             }
           }
 
@@ -300,104 +301,12 @@ public final class ArtistsQuery: GraphQLQuery {
               self.resultMap = unsafeResultMap
             }
 
-            public var artistFragment: ArtistFragment {
+            public var artistBasicFragment: ArtistBasicFragment {
               get {
-                return ArtistFragment(unsafeResultMap: resultMap)
+                return ArtistBasicFragment(unsafeResultMap: resultMap)
               }
               set {
                 resultMap += newValue.resultMap
-              }
-            }
-          }
-
-          public struct Tag: GraphQLSelectionSet {
-            public static let possibleTypes: [String] = ["TagConnection"]
-
-            public static var selections: [GraphQLSelection] {
-              return [
-                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                GraphQLField("nodes", type: .list(.object(Node.selections))),
-              ]
-            }
-
-            public private(set) var resultMap: ResultMap
-
-            public init(unsafeResultMap: ResultMap) {
-              self.resultMap = unsafeResultMap
-            }
-
-            public init(nodes: [Node?]? = nil) {
-              self.init(unsafeResultMap: ["__typename": "TagConnection", "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
-            }
-
-            public var __typename: String {
-              get {
-                return resultMap["__typename"]! as! String
-              }
-              set {
-                resultMap.updateValue(newValue, forKey: "__typename")
-              }
-            }
-
-            /// A list of nodes in the connection (without going through the
-            /// `edges` field).
-            public var nodes: [Node?]? {
-              get {
-                return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
-              }
-              set {
-                resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
-              }
-            }
-
-            public struct Node: GraphQLSelectionSet {
-              public static let possibleTypes: [String] = ["Tag"]
-
-              public static var selections: [GraphQLSelection] {
-                return [
-                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-                  GraphQLField("name", type: .nonNull(.scalar(String.self))),
-                  GraphQLField("count", type: .scalar(Int.self)),
-                ]
-              }
-
-              public private(set) var resultMap: ResultMap
-
-              public init(unsafeResultMap: ResultMap) {
-                self.resultMap = unsafeResultMap
-              }
-
-              public init(name: String, count: Int? = nil) {
-                self.init(unsafeResultMap: ["__typename": "Tag", "name": name, "count": count])
-              }
-
-              public var __typename: String {
-                get {
-                  return resultMap["__typename"]! as! String
-                }
-                set {
-                  resultMap.updateValue(newValue, forKey: "__typename")
-                }
-              }
-
-              /// The tag label.
-              public var name: String {
-                get {
-                  return resultMap["name"]! as! String
-                }
-                set {
-                  resultMap.updateValue(newValue, forKey: "name")
-                }
-              }
-
-              /// How many times this tag has been applied to the entity.
-              public var count: Int? {
-                get {
-                  return resultMap["count"] as? Int
-                }
-                set {
-                  resultMap.updateValue(newValue, forKey: "count")
-                }
               }
             }
           }
@@ -498,21 +407,21 @@ public final class ArtistsQuery: GraphQLQuery {
   }
 }
 
-public final class ArtistDetailQuery: GraphQLQuery {
+public final class ArtistDetailsQuery: GraphQLQuery {
   /// The raw GraphQL definition of this operation.
   public let operationDefinition: String =
     """
-    query ArtistDetail($id: ID!) {
+    query ArtistDetails($id: ID!) {
       node(id: $id) {
         __typename
-        ...ArtistFragment
+        ...ArtistDetailsFragment
       }
     }
     """
 
-  public let operationName: String = "ArtistDetail"
+  public let operationName: String = "ArtistDetails"
 
-  public var queryDocument: String { return operationDefinition.appending("\n" + ArtistFragment.fragmentDefinition) }
+  public var queryDocument: String { return operationDefinition.appending("\n" + ArtistDetailsFragment.fragmentDefinition) }
 
   public var id: GraphQLID
 
@@ -625,8 +534,8 @@ public final class ArtistDetailQuery: GraphQLQuery {
         return Node(unsafeResultMap: ["__typename": "URL"])
       }
 
-      public static func makeArtist(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, country: String? = nil, tags: AsArtist.Tag? = nil, mediaWikiImages: [AsArtist.MediaWikiImage?]) -> Node {
-        return Node(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "country": country, "tags": tags.flatMap { (value: AsArtist.Tag) -> ResultMap in value.resultMap }, "mediaWikiImages": mediaWikiImages.map { (value: AsArtist.MediaWikiImage?) -> ResultMap? in value.flatMap { (value: AsArtist.MediaWikiImage) -> ResultMap in value.resultMap } }])
+      public static func makeArtist(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, gender: String? = nil, country: String? = nil, tags: AsArtist.Tag? = nil, rating: AsArtist.Rating? = nil, mediaWikiImages: [AsArtist.MediaWikiImage?]) -> Node {
+        return Node(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "gender": gender, "country": country, "tags": tags.flatMap { (value: AsArtist.Tag) -> ResultMap in value.resultMap }, "rating": rating.flatMap { (value: AsArtist.Rating) -> ResultMap in value.resultMap }, "mediaWikiImages": mediaWikiImages.map { (value: AsArtist.MediaWikiImage?) -> ResultMap? in value.flatMap { (value: AsArtist.MediaWikiImage) -> ResultMap in value.resultMap } }])
       }
 
       public var __typename: String {
@@ -654,10 +563,10 @@ public final class ArtistDetailQuery: GraphQLQuery {
           self.resultMap = unsafeResultMap
         }
 
-        public var artistFragment: ArtistFragment? {
+        public var artistDetailsFragment: ArtistDetailsFragment? {
           get {
-            if !ArtistFragment.possibleTypes.contains(resultMap["__typename"]! as! String) { return nil }
-            return ArtistFragment(unsafeResultMap: resultMap)
+            if !ArtistDetailsFragment.possibleTypes.contains(resultMap["__typename"]! as! String) { return nil }
+            return ArtistDetailsFragment(unsafeResultMap: resultMap)
           }
           set {
             guard let newValue = newValue else { return }
@@ -689,8 +598,10 @@ public final class ArtistDetailQuery: GraphQLQuery {
             GraphQLField("name", type: .scalar(String.self)),
             GraphQLField("disambiguation", type: .scalar(String.self)),
             GraphQLField("type", type: .scalar(String.self)),
+            GraphQLField("gender", type: .scalar(String.self)),
             GraphQLField("country", type: .scalar(String.self)),
             GraphQLField("tags", type: .object(Tag.selections)),
+            GraphQLField("rating", type: .object(Rating.selections)),
             GraphQLField("mediaWikiImages", type: .nonNull(.list(.object(MediaWikiImage.selections)))),
           ]
         }
@@ -701,8 +612,8 @@ public final class ArtistDetailQuery: GraphQLQuery {
           self.resultMap = unsafeResultMap
         }
 
-        public init(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, country: String? = nil, tags: Tag? = nil, mediaWikiImages: [MediaWikiImage?]) {
-          self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "country": country, "tags": tags.flatMap { (value: Tag) -> ResultMap in value.resultMap }, "mediaWikiImages": mediaWikiImages.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }])
+        public init(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, gender: String? = nil, country: String? = nil, tags: Tag? = nil, rating: Rating? = nil, mediaWikiImages: [MediaWikiImage?]) {
+          self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "gender": gender, "country": country, "tags": tags.flatMap { (value: Tag) -> ResultMap in value.resultMap }, "rating": rating.flatMap { (value: Rating) -> ResultMap in value.resultMap }, "mediaWikiImages": mediaWikiImages.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }])
         }
 
         public var __typename: String {
@@ -764,6 +675,17 @@ public final class ArtistDetailQuery: GraphQLQuery {
           }
         }
 
+        /// Whether a person or character identifies as male, female, or
+        /// neither. Groups do not have genders.
+        public var gender: String? {
+          get {
+            return resultMap["gender"] as? String
+          }
+          set {
+            resultMap.updateValue(newValue, forKey: "gender")
+          }
+        }
+
         /// The country with which an artist is primarily identified. It
         /// is often, but not always, its birth/formation country.
         public var country: String? {
@@ -782,6 +704,16 @@ public final class ArtistDetailQuery: GraphQLQuery {
           }
           set {
             resultMap.updateValue(newValue?.resultMap, forKey: "tags")
+          }
+        }
+
+        /// The rating users have given to this entity.
+        public var rating: Rating? {
+          get {
+            return (resultMap["rating"] as? ResultMap).flatMap { Rating(unsafeResultMap: $0) }
+          }
+          set {
+            resultMap.updateValue(newValue?.resultMap, forKey: "rating")
           }
         }
 
@@ -813,9 +745,9 @@ public final class ArtistDetailQuery: GraphQLQuery {
             self.resultMap = unsafeResultMap
           }
 
-          public var artistFragment: ArtistFragment {
+          public var artistDetailsFragment: ArtistDetailsFragment {
             get {
-              return ArtistFragment(unsafeResultMap: resultMap)
+              return ArtistDetailsFragment(unsafeResultMap: resultMap)
             }
             set {
               resultMap += newValue.resultMap
@@ -915,6 +847,57 @@ public final class ArtistDetailQuery: GraphQLQuery {
           }
         }
 
+        public struct Rating: GraphQLSelectionSet {
+          public static let possibleTypes: [String] = ["Rating"]
+
+          public static var selections: [GraphQLSelection] {
+            return [
+              GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+              GraphQLField("value", type: .scalar(Double.self)),
+              GraphQLField("voteCount", type: .nonNull(.scalar(Int.self))),
+            ]
+          }
+
+          public private(set) var resultMap: ResultMap
+
+          public init(unsafeResultMap: ResultMap) {
+            self.resultMap = unsafeResultMap
+          }
+
+          public init(value: Double? = nil, voteCount: Int) {
+            self.init(unsafeResultMap: ["__typename": "Rating", "value": value, "voteCount": voteCount])
+          }
+
+          public var __typename: String {
+            get {
+              return resultMap["__typename"]! as! String
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "__typename")
+            }
+          }
+
+          /// The average rating value based on the aggregated votes.
+          public var value: Double? {
+            get {
+              return resultMap["value"] as? Double
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "value")
+            }
+          }
+
+          /// The number of votes that have contributed to the rating.
+          public var voteCount: Int {
+            get {
+              return resultMap["voteCount"]! as! Int
+            }
+            set {
+              resultMap.updateValue(newValue, forKey: "voteCount")
+            }
+          }
+        }
+
         public struct MediaWikiImage: GraphQLSelectionSet {
           public static let possibleTypes: [String] = ["MediaWikiImage"]
 
@@ -959,26 +942,19 @@ public final class ArtistDetailQuery: GraphQLQuery {
   }
 }
 
-public struct ArtistFragment: GraphQLFragment {
+public struct ArtistBasicFragment: GraphQLFragment {
   /// The raw GraphQL definition of this fragment.
   public static let fragmentDefinition: String =
     """
-    fragment ArtistFragment on Artist {
+    fragment ArtistBasicFragment on Artist {
       __typename
       mbid
       id
       name
       disambiguation
       type
+      gender
       country
-      tags {
-        __typename
-        nodes {
-          __typename
-          name
-          count
-        }
-      }
       mediaWikiImages {
         __typename
         url
@@ -996,8 +972,8 @@ public struct ArtistFragment: GraphQLFragment {
       GraphQLField("name", type: .scalar(String.self)),
       GraphQLField("disambiguation", type: .scalar(String.self)),
       GraphQLField("type", type: .scalar(String.self)),
+      GraphQLField("gender", type: .scalar(String.self)),
       GraphQLField("country", type: .scalar(String.self)),
-      GraphQLField("tags", type: .object(Tag.selections)),
       GraphQLField("mediaWikiImages", type: .nonNull(.list(.object(MediaWikiImage.selections)))),
     ]
   }
@@ -1008,8 +984,8 @@ public struct ArtistFragment: GraphQLFragment {
     self.resultMap = unsafeResultMap
   }
 
-  public init(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, country: String? = nil, tags: Tag? = nil, mediaWikiImages: [MediaWikiImage?]) {
-    self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "country": country, "tags": tags.flatMap { (value: Tag) -> ResultMap in value.resultMap }, "mediaWikiImages": mediaWikiImages.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }])
+  public init(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, gender: String? = nil, country: String? = nil, mediaWikiImages: [MediaWikiImage?]) {
+    self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "gender": gender, "country": country, "mediaWikiImages": mediaWikiImages.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }])
   }
 
   public var __typename: String {
@@ -1071,6 +1047,212 @@ public struct ArtistFragment: GraphQLFragment {
     }
   }
 
+  /// Whether a person or character identifies as male, female, or
+  /// neither. Groups do not have genders.
+  public var gender: String? {
+    get {
+      return resultMap["gender"] as? String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "gender")
+    }
+  }
+
+  /// The country with which an artist is primarily identified. It
+  /// is often, but not always, its birth/formation country.
+  public var country: String? {
+    get {
+      return resultMap["country"] as? String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "country")
+    }
+  }
+
+  /// Artist images found at MediaWiki URLs in the artist’s URL relationships.
+  /// Defaults to URL relationships with the type “image”.
+  /// This field is provided by the MediaWiki extension.
+  public var mediaWikiImages: [MediaWikiImage?] {
+    get {
+      return (resultMap["mediaWikiImages"] as! [ResultMap?]).map { (value: ResultMap?) -> MediaWikiImage? in value.flatMap { (value: ResultMap) -> MediaWikiImage in MediaWikiImage(unsafeResultMap: value) } }
+    }
+    set {
+      resultMap.updateValue(newValue.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }, forKey: "mediaWikiImages")
+    }
+  }
+
+  public struct MediaWikiImage: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["MediaWikiImage"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("url", type: .nonNull(.scalar(String.self))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(url: String) {
+      self.init(unsafeResultMap: ["__typename": "MediaWikiImage", "url": url])
+    }
+
+    public var __typename: String {
+      get {
+        return resultMap["__typename"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "__typename")
+      }
+    }
+
+    /// The URL of the actual image file.
+    public var url: String {
+      get {
+        return resultMap["url"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "url")
+      }
+    }
+  }
+}
+
+public struct ArtistDetailsFragment: GraphQLFragment {
+  /// The raw GraphQL definition of this fragment.
+  public static let fragmentDefinition: String =
+    """
+    fragment ArtistDetailsFragment on Artist {
+      __typename
+      mbid
+      id
+      name
+      disambiguation
+      type
+      gender
+      country
+      tags {
+        __typename
+        nodes {
+          __typename
+          name
+          count
+        }
+      }
+      rating {
+        __typename
+        value
+        voteCount
+      }
+      mediaWikiImages {
+        __typename
+        url
+      }
+    }
+    """
+
+  public static let possibleTypes: [String] = ["Artist"]
+
+  public static var selections: [GraphQLSelection] {
+    return [
+      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+      GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
+      GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
+      GraphQLField("name", type: .scalar(String.self)),
+      GraphQLField("disambiguation", type: .scalar(String.self)),
+      GraphQLField("type", type: .scalar(String.self)),
+      GraphQLField("gender", type: .scalar(String.self)),
+      GraphQLField("country", type: .scalar(String.self)),
+      GraphQLField("tags", type: .object(Tag.selections)),
+      GraphQLField("rating", type: .object(Rating.selections)),
+      GraphQLField("mediaWikiImages", type: .nonNull(.list(.object(MediaWikiImage.selections)))),
+    ]
+  }
+
+  public private(set) var resultMap: ResultMap
+
+  public init(unsafeResultMap: ResultMap) {
+    self.resultMap = unsafeResultMap
+  }
+
+  public init(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, gender: String? = nil, country: String? = nil, tags: Tag? = nil, rating: Rating? = nil, mediaWikiImages: [MediaWikiImage?]) {
+    self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "gender": gender, "country": country, "tags": tags.flatMap { (value: Tag) -> ResultMap in value.resultMap }, "rating": rating.flatMap { (value: Rating) -> ResultMap in value.resultMap }, "mediaWikiImages": mediaWikiImages.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }])
+  }
+
+  public var __typename: String {
+    get {
+      return resultMap["__typename"]! as! String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "__typename")
+    }
+  }
+
+  /// The MBID of the entity.
+  public var mbid: String {
+    get {
+      return resultMap["mbid"]! as! String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "mbid")
+    }
+  }
+
+  /// The ID of an object
+  public var id: GraphQLID {
+    get {
+      return resultMap["id"]! as! GraphQLID
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "id")
+    }
+  }
+
+  /// The official name of the entity.
+  public var name: String? {
+    get {
+      return resultMap["name"] as? String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "name")
+    }
+  }
+
+  /// A comment used to help distinguish identically named entitites.
+  public var disambiguation: String? {
+    get {
+      return resultMap["disambiguation"] as? String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "disambiguation")
+    }
+  }
+
+  /// Whether an artist is a person, a group, or something else.
+  public var type: String? {
+    get {
+      return resultMap["type"] as? String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "type")
+    }
+  }
+
+  /// Whether a person or character identifies as male, female, or
+  /// neither. Groups do not have genders.
+  public var gender: String? {
+    get {
+      return resultMap["gender"] as? String
+    }
+    set {
+      resultMap.updateValue(newValue, forKey: "gender")
+    }
+  }
+
   /// The country with which an artist is primarily identified. It
   /// is often, but not always, its birth/formation country.
   public var country: String? {
@@ -1089,6 +1271,16 @@ public struct ArtistFragment: GraphQLFragment {
     }
     set {
       resultMap.updateValue(newValue?.resultMap, forKey: "tags")
+    }
+  }
+
+  /// The rating users have given to this entity.
+  public var rating: Rating? {
+    get {
+      return (resultMap["rating"] as? ResultMap).flatMap { Rating(unsafeResultMap: $0) }
+    }
+    set {
+      resultMap.updateValue(newValue?.resultMap, forKey: "rating")
     }
   }
 
@@ -1192,6 +1384,57 @@ public struct ArtistFragment: GraphQLFragment {
         set {
           resultMap.updateValue(newValue, forKey: "count")
         }
+      }
+    }
+  }
+
+  public struct Rating: GraphQLSelectionSet {
+    public static let possibleTypes: [String] = ["Rating"]
+
+    public static var selections: [GraphQLSelection] {
+      return [
+        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+        GraphQLField("value", type: .scalar(Double.self)),
+        GraphQLField("voteCount", type: .nonNull(.scalar(Int.self))),
+      ]
+    }
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(value: Double? = nil, voteCount: Int) {
+      self.init(unsafeResultMap: ["__typename": "Rating", "value": value, "voteCount": voteCount])
+    }
+
+    public var __typename: String {
+      get {
+        return resultMap["__typename"]! as! String
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "__typename")
+      }
+    }
+
+    /// The average rating value based on the aggregated votes.
+    public var value: Double? {
+      get {
+        return resultMap["value"] as? Double
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "value")
+      }
+    }
+
+    /// The number of votes that have contributed to the rating.
+    public var voteCount: Int {
+      get {
+        return resultMap["voteCount"]! as! Int
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "voteCount")
       }
     }
   }

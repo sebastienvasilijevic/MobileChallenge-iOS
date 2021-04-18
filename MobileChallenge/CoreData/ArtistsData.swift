@@ -10,6 +10,14 @@ import CoreData
 class ArtistsData {
     static let shared = ArtistsData()
     
+    public func all() -> [ArtistLocal] {
+        let request: NSFetchRequest<ArtistLocal> = ArtistLocal.fetchRequest()
+        
+        guard let artistsLocalArray = try? DB.shared.viewContext.fetch(request) else { return [] }
+        
+        return artistsLocalArray
+    }
+    
     public func isBookmarked(artist: Artist) -> Bool {
         let request: NSFetchRequest<ArtistLocal> = ArtistLocal.fetchRequest()
         

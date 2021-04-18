@@ -52,7 +52,7 @@ class ArtistCell: UICollectionViewCell {
         }
     }
     
-    // MARK: Init views
+    // MARK: - Properties
     
     private lazy var mainView: UIView = {
         let v: UIView = .init()
@@ -62,13 +62,18 @@ class ArtistCell: UICollectionViewCell {
     }()
     
     private lazy var contentStackView: UIStackView = {
-        let v: UIStackView = .init(arrangedSubviews: [self.imageView, self.categoryFlagStackView, self.nameLabel, self.descriptionLabel])
+        let categoryFlagStackView: UIStackView = .init(arrangedSubviews: [self.categoryLabel, self.countryFlagLabel])
+        categoryFlagStackView.axis = .horizontal
+        categoryFlagStackView.alignment = .top
+        categoryFlagStackView.spacing = kMC.UI.margins/2
+        
+        let v: UIStackView = .init(arrangedSubviews: [self.artistImageView, categoryFlagStackView, self.nameLabel, self.descriptionLabel])
         v.axis = .vertical
         v.spacing = kMC.UI.margins/5
         return v
     }()
     
-    private lazy var imageView: UIImageView = {
+    private lazy var artistImageView: UIImageView = {
         let v: UIImageView = .init()
         v.isUserInteractionEnabled = true
         v.clipsToBounds = true
@@ -86,15 +91,7 @@ class ArtistCell: UICollectionViewCell {
         return v
     }()
     
-    private lazy var categoryFlagStackView: UIStackView = {
-        let v: UIStackView = .init(arrangedSubviews: [self.categoryLabel, self.countryFlagLabel])
-        v.axis = .horizontal
-        v.alignment = .top
-        v.spacing = kMC.UI.margins/2
-        return v
-    }()
-    
-    internal lazy var categoryLabel: UILabel = {
+    private lazy var categoryLabel: UILabel = {
         let v: UILabel = .init()
         v.font = kMC.Font.bold.withSize(kMC.Font.defaultSize-3)
         v.textColor = kMC.Colors.Text.secondary
@@ -103,7 +100,7 @@ class ArtistCell: UICollectionViewCell {
         return v
     }()
     
-    internal lazy var countryFlagLabel: UILabel = {
+    private lazy var countryFlagLabel: UILabel = {
         let v: UILabel = .init()
         v.font = kMC.Font.bold
         v.textColor = kMC.Colors.Text.primary
@@ -112,14 +109,14 @@ class ArtistCell: UICollectionViewCell {
         return v
     }()
     
-    internal lazy var nameLabel: UILabel = {
+    private lazy var nameLabel: UILabel = {
         let v: UILabel = .init()
         v.font = kMC.Font.bold
         v.numberOfLines = 2
         return v
     }()
     
-    internal lazy var descriptionLabel: UILabel = {
+    private lazy var descriptionLabel: UILabel = {
         let v: UILabel = .init()
         v.font = kMC.Font.regular
         v.textColor = kMC.Colors.Text.secondary
@@ -143,7 +140,7 @@ extension ArtistCell {
         
         self.contentView.addSubview(mainView)
         
-        self.imageView.addSubview(self.bookmarkButton)
+        self.artistImageView.addSubview(self.bookmarkButton)
         
         mainView.snp.makeConstraints { make in
             make.edges.equalToSuperview().inset(5)
@@ -153,16 +150,12 @@ extension ArtistCell {
             make.edges.width.equalToSuperview()
         }
         
-        imageView.snp.makeConstraints { make in
+        artistImageView.snp.makeConstraints { make in
             make.height.equalTo(self.mainView.snp.width).offset(20)
         }
         
         bookmarkButton.snp.makeConstraints { make in
             make.top.trailing.equalToSuperview().inset(5)
-        }
-        
-        categoryFlagStackView.snp.makeConstraints { make in
-            make.height.equalTo(10)
         }
     }
     
@@ -177,7 +170,7 @@ extension ArtistCell {
         
         self.downloadTask?.cancel()
         self.downloadTask = nil
-        self.imageView.image = placeholderImage
+        self.artistImageView.image = placeholderImage
         self.bookmarkButton.isHidden = true
         self.categoryLabel.text = ""
         self.countryFlagLabel.text = ""
@@ -188,21 +181,7 @@ extension ArtistCell {
             return
         }
         
-        if let firstImage = value.getMediaImages().first, let url = URL(string: firstImage.url) {
-            self.imageView.layoutIfNeeded()
-            self.imageView.kf.indicatorType = .activity
-            
-            self.downloadTask = self.imageView.kf.setImage(
-                with: url,
-                placeholder: placeholderImage,
-                options: [
-                    .processor(DownsamplingImageProcessor(size: self.imageView.bounds.size)),
-                    .scaleFactor(UIScreen.main.scale),
-                    .cacheOriginalImage,
-                    .loadDiskFileSynchronously
-                ]
-            )
-        }
+        self.downloadTask = self.artistImageView.downloadImage(from: value.getFirstImageUri(), downsampling: true)
         self.configureBookmarkButton()
         self.categoryLabel.text = value.type ?? ""
         self.countryFlagLabel.text = value.getCountryFlag()

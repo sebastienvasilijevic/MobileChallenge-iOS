@@ -6,91 +6,38 @@
 //
 
 import Apollo
+import CoreData
 import SnapKit
 import UIKit
 
-class ArtistsViewController: MainViewController {
+class ArtistsViewController: CommonArtistListViewController {
     
     private let numberItemPerPage: Int = 15
     
     lazy var artistsViewModel: ArtistsViewModel = .init()
     
-    var dataSource: UICollectionViewDiffableDataSource<Section, Artist>! = nil
-    
-    var searchBarTerms: String = ""
     var alreadyFetchingFromScrollBottom: Bool = false
-    
-    enum Section {
-        case artistsList
+    override var hasSupplementaryFooterView: Bool {
+        return true
     }
     
-    // MARK: Load methods
+    
+    // MARK: - View Life Cycle
 
-    override func loadView() {
-        super.loadView()
-        
-        self.setupUI()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.configureDataSource()
+        self.searchController.searchBar.delegate = self
+        self.artistsCollectionView.delegate = self
         self.configureArtistsViewModel()
         self.fetchArtists(newList: true)
     }
     
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        self.updateCollectionViewLayout()
-    }
     
-    
-    // MARK: Init views
-    
-    // Using SearchController to get the "done" button when editing searchBar
-    private lazy var searchController: CustomSearchController = {
-        let v: CustomSearchController = .init(searchResultsController: nil)
-        // This line to call custom UI in loadView before clicking on it
-        _ = v.view
-        v.searchBar.placeholder = "artists_list_searchBar_placeholder".localized
-        v.searchBar.delegate = self
-        return v
-    }()
-    
-    private lazy var artistsCollectionView: UICollectionView = {
-        let v = UICollectionView(frame: .init(), collectionViewLayout: self.generateLayout())
-        v.backgroundColor = kMC.Colors.Background.primary
-        v.delegate = self
-        v.register(ArtistCell.self, forCellWithReuseIdentifier: ArtistCell.reuseIdentifer)
-        v.register(LoadingReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: LoadingReusableView.reuseIdentifer)
-        return v
-    }()
-    
-    // MARK: Setup UI
-    
-    private func setupUI() {
-        self.definesPresentationContext = true
-        self.navigationItem.titleView = searchController.searchBar
-        
-        self.view.addSubview(self.artistsCollectionView)
-        
-        self.artistsCollectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-    
-    
-    // MARK: CollectionView layout methods
-    
-    /// Update CollectionViewLayout (for example on orientation change)
-    func updateCollectionViewLayout() {
-        self.artistsCollectionView.setCollectionViewLayout(self.generateLayout(), animated: false)
-        self.updateCollectionView(reloadingSnapshot: false)
-    }
+    // MARK: - CollectionView layout methods
     
     /// Configure CollectionView dataSource
-    func configureDataSource() {
+    override func configureDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Section, Artist>(collectionView: self.artistsCollectionView) {
             (collectionView: UICollectionView, indexPath: IndexPath, artistItem: Artist) -> UICollectionViewCell? in
             
@@ -118,7 +65,7 @@ class ArtistsViewController: MainViewController {
     }
     
     /// Generate DataSource Snapshot with objects
-    func applySnapshot() {
+    override func applySnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Artist>()
         snapshot.appendSections([.artistsList])
         let items = artistsViewModel.artists
@@ -128,7 +75,7 @@ class ArtistsViewController: MainViewController {
     }
     
     
-    // MARK: Fetch & Update methods
+    // MARK: - Fetch & Update methods
     
     /// Configure Artists ViewModel (auto refresh on data update)
     func configureArtistsViewModel() {
@@ -146,14 +93,6 @@ class ArtistsViewController: MainViewController {
             completion?()
         }
     }
-
-    /// Update DateSource Snapshot and reload CollectionView
-    func updateCollectionView(reloadingSnapshot: Bool = true) {
-        if reloadingSnapshot {
-            self.applySnapshot()
-        }
-        self.artistsCollectionView.reloadData()
-    }
 }
 
 // MARK: - UISearchBar delegate
@@ -164,7 +103,7 @@ extension ArtistsViewController: UISearchBarDelegate {
         self.perform(#selector(self.searchBarTextFetch), with: nil, afterDelay: 0.3)
         
         // Save current text on change to re-assign it later (on EndEditing)
-        searchBarTerms = searchBar.text ?? ""
+        searchBarText = searchBar.text ?? ""
     }
     
     @objc func searchBarTextFetch() {
@@ -176,7 +115,7 @@ extension ArtistsViewController: UISearchBarDelegate {
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         // Doing it because searchBar is automatically cleared after a search else
-        searchBar.text = self.searchBarTerms
+        searchBar.text = self.searchBarText
     }
 }
 
@@ -207,5 +146,7 @@ extension ArtistsViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        
+        self.pushArtistDetails(artists: self.artistsViewModel.artists, at: indexPath.item)
     }
 }
