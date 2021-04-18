@@ -9,7 +9,13 @@ import Apollo
 import Foundation
 
 class ArtistsViewModel: NSObject {
-    private(set) var artists: Artists = []
+    public var onUpdateArtists: (() -> Void)?
+    
+    private(set) var artists: [Artist] = [] {
+        didSet {
+            self.onUpdateArtists?()
+        }
+    }
     private(set) var hasNextPage: Bool = false
     private var lastCursorId: String? = nil
     
@@ -19,7 +25,7 @@ class ArtistsViewModel: NSObject {
         super.init()
     }
     
-    init(artists: Artists) {
+    init(artists: [Artist]) {
         super.init()
         self.artists = artists
     }
@@ -29,9 +35,9 @@ class ArtistsViewModel: NSObject {
         self.cancellableFetch = nil
         
         if newList {
-            self.artists.removeAll()
             self.hasNextPage = false
             self.lastCursorId = nil
+            self.artists.removeAll()
         }
         
         let lastQuery: String = (query == nil || query!.isEmpty) ? "*" : "\"\(query!)\""
@@ -40,12 +46,16 @@ class ArtistsViewModel: NSObject {
         self.cancellableFetch = Network.shared.apollo.fetch(query: artistsQuery) { result in
             switch result {
             case .success(let graphQLResult):
-                if let artistsNodes = graphQLResult.data?.search?.artists?.nodes {
-                    self.artists.append(contentsOf: artistsNodes.compactMap{ $0 })
-                }
                 if let pageInfo = graphQLResult.data?.search?.artists?.pageInfo {
                     self.hasNextPage = pageInfo.hasNextPage
                     self.lastCursorId = pageInfo.endCursor
+                }
+                if let artistsNodes = graphQLResult.data?.search?.artists?.nodes {
+                    var mArtists: [Artist] = []
+                    for artistNode in artistsNodes.compactMap({ $0 }) {
+                        mArtists.append(.init(apiArtistNode: artistNode))
+                    }
+                    self.artists.append(contentsOf: mArtists)
                 }
                 DispatchQueue.main.async {
                     completion(graphQLResult, nil)
@@ -56,5 +66,13 @@ class ArtistsViewModel: NSObject {
                 }
             }
         }
+    }
+    
+    public func isArtistBookmarked(artist: Artist) -> Bool {
+        return ArtistsData.shared.isBookmarked(artist: artist)
+    }
+    
+    public func bookmarkAction(artist: Artist) {
+        return ArtistsData.shared.bookmarkAction(artist: artist)
     }
 }

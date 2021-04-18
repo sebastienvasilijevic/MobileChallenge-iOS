@@ -15,7 +15,7 @@ public final class ArtistsQuery: GraphQLQuery {
           __typename
           nodes {
             __typename
-            ...ArtistBasicFragment
+            ...ArtistFragment
           }
           pageInfo {
             __typename
@@ -29,7 +29,7 @@ public final class ArtistsQuery: GraphQLQuery {
 
   public let operationName: String = "Artists"
 
-  public var queryDocument: String { return operationDefinition.appending("\n" + ArtistBasicFragment.fragmentDefinition) }
+  public var queryDocument: String { return operationDefinition.appending("\n" + ArtistFragment.fragmentDefinition) }
 
   public var search: String
   public var first: Int
@@ -177,6 +177,7 @@ public final class ArtistsQuery: GraphQLQuery {
               GraphQLField("disambiguation", type: .scalar(String.self)),
               GraphQLField("type", type: .scalar(String.self)),
               GraphQLField("country", type: .scalar(String.self)),
+              GraphQLField("tags", type: .object(Tag.selections)),
               GraphQLField("mediaWikiImages", type: .nonNull(.list(.object(MediaWikiImage.selections)))),
             ]
           }
@@ -187,8 +188,8 @@ public final class ArtistsQuery: GraphQLQuery {
             self.resultMap = unsafeResultMap
           }
 
-          public init(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, country: String? = nil, mediaWikiImages: [MediaWikiImage?]) {
-            self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "country": country, "mediaWikiImages": mediaWikiImages.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }])
+          public init(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, country: String? = nil, tags: Tag? = nil, mediaWikiImages: [MediaWikiImage?]) {
+            self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "country": country, "tags": tags.flatMap { (value: Tag) -> ResultMap in value.resultMap }, "mediaWikiImages": mediaWikiImages.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }])
           }
 
           public var __typename: String {
@@ -261,6 +262,16 @@ public final class ArtistsQuery: GraphQLQuery {
             }
           }
 
+          /// A list of tags linked to this entity.
+          public var tags: Tag? {
+            get {
+              return (resultMap["tags"] as? ResultMap).flatMap { Tag(unsafeResultMap: $0) }
+            }
+            set {
+              resultMap.updateValue(newValue?.resultMap, forKey: "tags")
+            }
+          }
+
           /// Artist images found at MediaWiki URLs in the artist’s URL relationships.
           /// Defaults to URL relationships with the type “image”.
           /// This field is provided by the MediaWiki extension.
@@ -289,12 +300,104 @@ public final class ArtistsQuery: GraphQLQuery {
               self.resultMap = unsafeResultMap
             }
 
-            public var artistBasicFragment: ArtistBasicFragment {
+            public var artistFragment: ArtistFragment {
               get {
-                return ArtistBasicFragment(unsafeResultMap: resultMap)
+                return ArtistFragment(unsafeResultMap: resultMap)
               }
               set {
                 resultMap += newValue.resultMap
+              }
+            }
+          }
+
+          public struct Tag: GraphQLSelectionSet {
+            public static let possibleTypes: [String] = ["TagConnection"]
+
+            public static var selections: [GraphQLSelection] {
+              return [
+                GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                GraphQLField("nodes", type: .list(.object(Node.selections))),
+              ]
+            }
+
+            public private(set) var resultMap: ResultMap
+
+            public init(unsafeResultMap: ResultMap) {
+              self.resultMap = unsafeResultMap
+            }
+
+            public init(nodes: [Node?]? = nil) {
+              self.init(unsafeResultMap: ["__typename": "TagConnection", "nodes": nodes.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }])
+            }
+
+            public var __typename: String {
+              get {
+                return resultMap["__typename"]! as! String
+              }
+              set {
+                resultMap.updateValue(newValue, forKey: "__typename")
+              }
+            }
+
+            /// A list of nodes in the connection (without going through the
+            /// `edges` field).
+            public var nodes: [Node?]? {
+              get {
+                return (resultMap["nodes"] as? [ResultMap?]).flatMap { (value: [ResultMap?]) -> [Node?] in value.map { (value: ResultMap?) -> Node? in value.flatMap { (value: ResultMap) -> Node in Node(unsafeResultMap: value) } } }
+              }
+              set {
+                resultMap.updateValue(newValue.flatMap { (value: [Node?]) -> [ResultMap?] in value.map { (value: Node?) -> ResultMap? in value.flatMap { (value: Node) -> ResultMap in value.resultMap } } }, forKey: "nodes")
+              }
+            }
+
+            public struct Node: GraphQLSelectionSet {
+              public static let possibleTypes: [String] = ["Tag"]
+
+              public static var selections: [GraphQLSelection] {
+                return [
+                  GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("name", type: .nonNull(.scalar(String.self))),
+                  GraphQLField("count", type: .scalar(Int.self)),
+                ]
+              }
+
+              public private(set) var resultMap: ResultMap
+
+              public init(unsafeResultMap: ResultMap) {
+                self.resultMap = unsafeResultMap
+              }
+
+              public init(name: String, count: Int? = nil) {
+                self.init(unsafeResultMap: ["__typename": "Tag", "name": name, "count": count])
+              }
+
+              public var __typename: String {
+                get {
+                  return resultMap["__typename"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "__typename")
+                }
+              }
+
+              /// The tag label.
+              public var name: String {
+                get {
+                  return resultMap["name"]! as! String
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "name")
+                }
+              }
+
+              /// How many times this tag has been applied to the entity.
+              public var count: Int? {
+                get {
+                  return resultMap["count"] as? Int
+                }
+                set {
+                  resultMap.updateValue(newValue, forKey: "count")
+                }
               }
             }
           }
@@ -402,14 +505,14 @@ public final class ArtistDetailQuery: GraphQLQuery {
     query ArtistDetail($id: ID!) {
       node(id: $id) {
         __typename
-        ...ArtistDetailsFragment
+        ...ArtistFragment
       }
     }
     """
 
   public let operationName: String = "ArtistDetail"
 
-  public var queryDocument: String { return operationDefinition.appending("\n" + ArtistDetailsFragment.fragmentDefinition) }
+  public var queryDocument: String { return operationDefinition.appending("\n" + ArtistFragment.fragmentDefinition) }
 
   public var id: GraphQLID
 
@@ -551,10 +654,10 @@ public final class ArtistDetailQuery: GraphQLQuery {
           self.resultMap = unsafeResultMap
         }
 
-        public var artistDetailsFragment: ArtistDetailsFragment? {
+        public var artistFragment: ArtistFragment? {
           get {
-            if !ArtistDetailsFragment.possibleTypes.contains(resultMap["__typename"]! as! String) { return nil }
-            return ArtistDetailsFragment(unsafeResultMap: resultMap)
+            if !ArtistFragment.possibleTypes.contains(resultMap["__typename"]! as! String) { return nil }
+            return ArtistFragment(unsafeResultMap: resultMap)
           }
           set {
             guard let newValue = newValue else { return }
@@ -710,9 +813,9 @@ public final class ArtistDetailQuery: GraphQLQuery {
             self.resultMap = unsafeResultMap
           }
 
-          public var artistDetailsFragment: ArtistDetailsFragment {
+          public var artistFragment: ArtistFragment {
             get {
-              return ArtistDetailsFragment(unsafeResultMap: resultMap)
+              return ArtistFragment(unsafeResultMap: resultMap)
             }
             set {
               resultMap += newValue.resultMap
@@ -856,11 +959,11 @@ public final class ArtistDetailQuery: GraphQLQuery {
   }
 }
 
-public struct ArtistDetailsFragment: GraphQLFragment {
+public struct ArtistFragment: GraphQLFragment {
   /// The raw GraphQL definition of this fragment.
   public static let fragmentDefinition: String =
     """
-    fragment ArtistDetailsFragment on Artist {
+    fragment ArtistFragment on Artist {
       __typename
       mbid
       id
@@ -1090,173 +1193,6 @@ public struct ArtistDetailsFragment: GraphQLFragment {
           resultMap.updateValue(newValue, forKey: "count")
         }
       }
-    }
-  }
-
-  public struct MediaWikiImage: GraphQLSelectionSet {
-    public static let possibleTypes: [String] = ["MediaWikiImage"]
-
-    public static var selections: [GraphQLSelection] {
-      return [
-        GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-        GraphQLField("url", type: .nonNull(.scalar(String.self))),
-      ]
-    }
-
-    public private(set) var resultMap: ResultMap
-
-    public init(unsafeResultMap: ResultMap) {
-      self.resultMap = unsafeResultMap
-    }
-
-    public init(url: String) {
-      self.init(unsafeResultMap: ["__typename": "MediaWikiImage", "url": url])
-    }
-
-    public var __typename: String {
-      get {
-        return resultMap["__typename"]! as! String
-      }
-      set {
-        resultMap.updateValue(newValue, forKey: "__typename")
-      }
-    }
-
-    /// The URL of the actual image file.
-    public var url: String {
-      get {
-        return resultMap["url"]! as! String
-      }
-      set {
-        resultMap.updateValue(newValue, forKey: "url")
-      }
-    }
-  }
-}
-
-public struct ArtistBasicFragment: GraphQLFragment {
-  /// The raw GraphQL definition of this fragment.
-  public static let fragmentDefinition: String =
-    """
-    fragment ArtistBasicFragment on Artist {
-      __typename
-      mbid
-      id
-      name
-      disambiguation
-      type
-      country
-      mediaWikiImages {
-        __typename
-        url
-      }
-    }
-    """
-
-  public static let possibleTypes: [String] = ["Artist"]
-
-  public static var selections: [GraphQLSelection] {
-    return [
-      GraphQLField("__typename", type: .nonNull(.scalar(String.self))),
-      GraphQLField("mbid", type: .nonNull(.scalar(String.self))),
-      GraphQLField("id", type: .nonNull(.scalar(GraphQLID.self))),
-      GraphQLField("name", type: .scalar(String.self)),
-      GraphQLField("disambiguation", type: .scalar(String.self)),
-      GraphQLField("type", type: .scalar(String.self)),
-      GraphQLField("country", type: .scalar(String.self)),
-      GraphQLField("mediaWikiImages", type: .nonNull(.list(.object(MediaWikiImage.selections)))),
-    ]
-  }
-
-  public private(set) var resultMap: ResultMap
-
-  public init(unsafeResultMap: ResultMap) {
-    self.resultMap = unsafeResultMap
-  }
-
-  public init(mbid: String, id: GraphQLID, name: String? = nil, disambiguation: String? = nil, type: String? = nil, country: String? = nil, mediaWikiImages: [MediaWikiImage?]) {
-    self.init(unsafeResultMap: ["__typename": "Artist", "mbid": mbid, "id": id, "name": name, "disambiguation": disambiguation, "type": type, "country": country, "mediaWikiImages": mediaWikiImages.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }])
-  }
-
-  public var __typename: String {
-    get {
-      return resultMap["__typename"]! as! String
-    }
-    set {
-      resultMap.updateValue(newValue, forKey: "__typename")
-    }
-  }
-
-  /// The MBID of the entity.
-  public var mbid: String {
-    get {
-      return resultMap["mbid"]! as! String
-    }
-    set {
-      resultMap.updateValue(newValue, forKey: "mbid")
-    }
-  }
-
-  /// The ID of an object
-  public var id: GraphQLID {
-    get {
-      return resultMap["id"]! as! GraphQLID
-    }
-    set {
-      resultMap.updateValue(newValue, forKey: "id")
-    }
-  }
-
-  /// The official name of the entity.
-  public var name: String? {
-    get {
-      return resultMap["name"] as? String
-    }
-    set {
-      resultMap.updateValue(newValue, forKey: "name")
-    }
-  }
-
-  /// A comment used to help distinguish identically named entitites.
-  public var disambiguation: String? {
-    get {
-      return resultMap["disambiguation"] as? String
-    }
-    set {
-      resultMap.updateValue(newValue, forKey: "disambiguation")
-    }
-  }
-
-  /// Whether an artist is a person, a group, or something else.
-  public var type: String? {
-    get {
-      return resultMap["type"] as? String
-    }
-    set {
-      resultMap.updateValue(newValue, forKey: "type")
-    }
-  }
-
-  /// The country with which an artist is primarily identified. It
-  /// is often, but not always, its birth/formation country.
-  public var country: String? {
-    get {
-      return resultMap["country"] as? String
-    }
-    set {
-      resultMap.updateValue(newValue, forKey: "country")
-    }
-  }
-
-  /// Artist images found at MediaWiki URLs in the artist’s URL relationships.
-  /// Defaults to URL relationships with the type “image”.
-  /// This field is provided by the MediaWiki extension.
-  public var mediaWikiImages: [MediaWikiImage?] {
-    get {
-      return (resultMap["mediaWikiImages"] as! [ResultMap?]).map { (value: ResultMap?) -> MediaWikiImage? in value.flatMap { (value: ResultMap) -> MediaWikiImage in MediaWikiImage(unsafeResultMap: value) } }
-    }
-    set {
-      resultMap.updateValue(newValue.map { (value: MediaWikiImage?) -> ResultMap? in value.flatMap { (value: MediaWikiImage) -> ResultMap in value.resultMap } }, forKey: "mediaWikiImages")
     }
   }
 

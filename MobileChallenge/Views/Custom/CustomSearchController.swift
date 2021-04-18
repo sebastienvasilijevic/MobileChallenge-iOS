@@ -15,10 +15,16 @@ class CustomSearchController: UISearchController {
         self.hidesNavigationBarDuringPresentation = false
         self.searchBar.setValue("button_done".localized, forKey: "cancelButtonText")
         
-        if let textfield = searchBar.value(forKey: "searchField") as? UITextField {
+        if let textfield = searchBar.textField {
             textfield.backgroundColor = kMC.Colors.Background.secondary
             textfield.textColor = kMC.Colors.Text.primary
             textfield.tintColor = kMC.Colors.Text.primary
+        }
+    }
+    
+    public var isLoading: Bool = false {
+        didSet {
+            self.searchBar.isLoading = self.isLoading
         }
     }
 }

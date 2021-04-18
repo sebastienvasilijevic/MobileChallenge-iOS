@@ -2,7 +2,7 @@ query Artists($search: String!, $first: Int!, $after: String) {
   search {
     artists(query: $search, first: $first, after: $after) {
       nodes {
-        ...ArtistBasicFragment
+        ...ArtistFragment
       }
       pageInfo {
         hasNextPage
@@ -14,11 +14,11 @@ query Artists($search: String!, $first: Int!, $after: String) {
 
 query ArtistDetail($id: ID!) {
   node(id: $id) {
-    ...ArtistDetailsFragment
+    ...ArtistFragment
   }
 }
 
-fragment ArtistDetailsFragment on Artist {
+fragment ArtistFragment on Artist {
   mbid
   id
   name
@@ -31,18 +31,6 @@ fragment ArtistDetailsFragment on Artist {
       count
     }
   }
-  mediaWikiImages {
-    url
-  }
-}
-
-fragment ArtistBasicFragment on Artist {
-  mbid
-  id
-  name
-  disambiguation
-  type
-  country
   mediaWikiImages {
     url
   }

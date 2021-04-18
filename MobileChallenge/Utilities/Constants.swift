@@ -44,10 +44,16 @@ struct kMC {
         static let defaultSize: CGFloat = UIFont.systemFontSize
     }
     
-    /// Images names that are in Assets
+    /// Images names
     struct Images {
+        // Images in Assets
         static let arrowDown: String = "arrowDown"
         static let noPictureImage: String = "noPictureImage"
+        
+        // Images in SF Symbols
+        static let magnifyingglass: String = "magnifyingglass"
+        static let bookmark: String = "bookmark"
+        static let bookmarkFill: String = "bookmark.fill"
     }
     
     /// Differents date formats

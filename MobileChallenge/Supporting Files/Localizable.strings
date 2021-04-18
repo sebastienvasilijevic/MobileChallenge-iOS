@@ -6,5 +6,8 @@
   
 */
 
+"tabBar_search_artists_label" = "Artists";
+"tabBar_bookmarks_label" = "Bookmarks";
+
 "button_done" = "Done";
 "artists_list_searchBar_placeholder" = "Search for artists";

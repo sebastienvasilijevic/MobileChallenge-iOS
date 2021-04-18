@@ -14,7 +14,7 @@ class LoadingReusableView: UICollectionReusableView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        self.setupViews()
+        self.setupUI()
     }
     
     required init?(coder: NSCoder) {
@@ -30,8 +30,11 @@ class LoadingReusableView: UICollectionReusableView {
     }()
 }
 
+
+// MARK: - Setup UI
+
 extension LoadingReusableView {
-    func setupViews() {
+    func setupUI() {
         self.clipsToBounds = true
         
         self.addSubview(activityIndicator)

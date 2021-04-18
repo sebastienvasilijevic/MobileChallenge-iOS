@@ -29,40 +29,20 @@ class ArtistsViewController: MainViewController {
     override func loadView() {
         super.loadView()
         
-        self.setupViews()
+        self.setupUI()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.configureDataSource()
+        self.configureArtistsViewModel()
         self.fetchArtists(newList: true)
     }
     
-    private func setupViews() {
-        self.definesPresentationContext = true
-        self.navigationItem.titleView = searchController.searchBar
-        
-        self.view.addSubview(self.artistsCollectionView)
-        
-        self.artistsCollectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-    }
-    
-    // MARK: Update methods
-    
-    func fetchArtists(newList: Bool, completion: (() -> Void)? = nil) {
-        artistsViewModel.fetchArtists(query: self.searchController.searchBar.text, first: self.numberItemPerPage, newList: newList) { [weak self] (result, error) in
-            completion?()
-            self?.updateCollectionView()
-        }
-    }
-
-    func updateCollectionView() {
-        self.applySnapshot()
-        
-        self.artistsCollectionView.reloadData()
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        self.updateCollectionViewLayout()
     }
     
     
@@ -79,7 +59,7 @@ class ArtistsViewController: MainViewController {
     }()
     
     private lazy var artistsCollectionView: UICollectionView = {
-        let v = UICollectionView(frame: .init(), collectionViewLayout: generateLayout())
+        let v = UICollectionView(frame: .init(), collectionViewLayout: self.generateLayout())
         v.backgroundColor = kMC.Colors.Background.primary
         v.delegate = self
         v.register(ArtistCell.self, forCellWithReuseIdentifier: ArtistCell.reuseIdentifer)
@@ -87,16 +67,41 @@ class ArtistsViewController: MainViewController {
         return v
     }()
     
+    // MARK: Setup UI
+    
+    private func setupUI() {
+        self.definesPresentationContext = true
+        self.navigationItem.titleView = searchController.searchBar
+        
+        self.view.addSubview(self.artistsCollectionView)
+        
+        self.artistsCollectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+    
     
     // MARK: CollectionView layout methods
     
+    /// Update CollectionViewLayout (for example on orientation change)
+    func updateCollectionViewLayout() {
+        self.artistsCollectionView.setCollectionViewLayout(self.generateLayout(), animated: false)
+        self.updateCollectionView(reloadingSnapshot: false)
+    }
+    
+    /// Configure CollectionView dataSource
     func configureDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Section, Artist>(collectionView: self.artistsCollectionView) {
-            (collectionView: UICollectionView, indexPath: IndexPath, detailItem: Artist) -> UICollectionViewCell? in
+            (collectionView: UICollectionView, indexPath: IndexPath, artistItem: Artist) -> UICollectionViewCell? in
             
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ArtistCell.reuseIdentifer, for: indexPath) as? ArtistCell else { return .init()
             }
-            cell.configure(with: detailItem)
+            cell.configure(with: artistItem, isBookmarked: self.artistsViewModel.isArtistBookmarked(artist: artistItem))
+            
+            cell.bookmarkHandler = { [weak self] cell in
+                self?.artistsViewModel.bookmarkAction(artist: cell.artist)
+                self?.artistsCollectionView.reloadData()
+            }
             
             return cell
         }
@@ -112,28 +117,7 @@ class ArtistsViewController: MainViewController {
         }
     }
     
-    func generateLayout() -> UICollectionViewLayout {
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(200))
-        let fullPhotoItem = NSCollectionLayoutItem(layoutSize: itemSize)
-        fullPhotoItem.edgeSpacing = .init(leading: nil, top: .fixed(3), trailing: nil, bottom: .fixed(3))
-        
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(200))
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: fullPhotoItem, count: UIDevice.current.userInterfaceIdiom == .pad ? 5 : 3)
-        
-        let section = NSCollectionLayoutSection(group: group)
-        
-        let footerItemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(44))
-        let footerItem = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: footerItemSize, elementKind: UICollectionView.elementKindSectionFooter, alignment: .bottom)
-        section.boundarySupplementaryItems = [footerItem]
-        
-        let layout = UICollectionViewCompositionalLayout(section: section)
-        return layout
-    }
-    
+    /// Generate DataSource Snapshot with objects
     func applySnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Artist>()
         snapshot.appendSections([.artistsList])
@@ -141,6 +125,34 @@ class ArtistsViewController: MainViewController {
         snapshot.appendItems(items)
         
         dataSource.apply(snapshot, animatingDifferences: false)
+    }
+    
+    
+    // MARK: Fetch & Update methods
+    
+    /// Configure Artists ViewModel (auto refresh on data update)
+    func configureArtistsViewModel() {
+        self.artistsViewModel.onUpdateArtists = { [weak self] in
+            self?.updateCollectionView()
+        }
+    }
+    
+    /// Fetch artists for a `newList`
+    ///
+    /// - Parameter newList: If true, the current collectionView is cleared before fetching.
+    /// - Parameter completion: The callback to execute after fetch has done.
+    func fetchArtists(newList: Bool, completion: (() -> Void)? = nil) {
+        self.artistsViewModel.fetchArtists(query: self.searchController.searchBar.text, first: self.numberItemPerPage, newList: newList) { (result, error) in
+            completion?()
+        }
+    }
+
+    /// Update DateSource Snapshot and reload CollectionView
+    func updateCollectionView(reloadingSnapshot: Bool = true) {
+        if reloadingSnapshot {
+            self.applySnapshot()
+        }
+        self.artistsCollectionView.reloadData()
     }
 }
 
@@ -151,15 +163,19 @@ extension ArtistsViewController: UISearchBarDelegate {
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.searchBarTextFetch), object: nil)
         self.perform(#selector(self.searchBarTextFetch), with: nil, afterDelay: 0.3)
         
+        // Save current text on change to re-assign it later (on EndEditing)
         searchBarTerms = searchBar.text ?? ""
     }
     
     @objc func searchBarTextFetch() {
-        self.fetchArtists(newList: true)
+        self.searchController.isLoading = true
+        self.fetchArtists(newList: true) {
+            self.searchController.isLoading = false
+        }
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        // Doing it because searchBar is automatically cleared else
+        // Doing it because searchBar is automatically cleared after a search else
         searchBar.text = self.searchBarTerms
     }
 }
@@ -178,14 +194,14 @@ extension ArtistsViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplaySupplementaryView view: UICollectionReusableView, forElementKind elementKind: String, at indexPath: IndexPath) {
-        if elementKind == UICollectionView.elementKindSectionFooter, let loadingView = view as? LoadingReusableView {
+        if elementKind == UICollectionView.elementKindSectionFooter, let loadingView = view as? LoadingReusableView, self.artistsViewModel.hasNextPage {
             loadingView.startAnimating()
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplayingSupplementaryView view: UICollectionReusableView, forElementOfKind elementKind: String, at indexPath: IndexPath) {
         if elementKind == UICollectionView.elementKindSectionFooter, let loadingView = view as? LoadingReusableView {
-            loadingView.startAnimating()
+            loadingView.stopAnimating()
         }
     }
     
