@@ -9,5 +9,17 @@
 "tabBar_search_artists_label" = "Artists";
 "tabBar_bookmarks_label" = "Bookmarks";
 
-"button_done" = "Done";
 "artists_list_searchBar_placeholder" = "Search for artists";
+"artists_list_searchBar_button_done" = "Done";
+
+"artists_list_placeholder_searchArtist_search_text" = "Search for your favorites artists";
+"artists_list_placeholder_noArtist_search_text" = "There is no artist found for `%@`\nTry something else.";
+"artists_list_placeholder_button_text" = "Search for artists";
+
+"bookmarks_list_placeholder_searchArtist_search_text" = "Search for your favorites artists in the search list";
+"bookmarks_list_placeholder_noArtist_search_text" = "There is no artist found in your bookmarks for `%@`\nTry something else.";
+"bookmarks_list_placeholder_button_text" = "Search for new artists";
+
+"artistDetails_comments_label" = "COMMENTS";
+"artistDetails_associatedTerms_label" = "ASSOCIATED TERMS";
+"artistDetails_rating_label" = "RATING";

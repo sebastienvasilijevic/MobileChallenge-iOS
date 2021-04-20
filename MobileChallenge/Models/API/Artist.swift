@@ -25,9 +25,14 @@ public struct Artist: Codable, Hashable {
     public struct ArtistTags: Codable {
         var nodes: [Node] = []
         
-        struct Node: Codable {
+        public struct Node: Codable {
             var name: String!
             var count: Int!
+        }
+        
+        /// Only get tags which count is more than 1 (Not to get too many tags) and sort descending
+        public func filterAndSort() -> [Node] {
+            return nodes.filter({ $0.count > 1 }).sorted(by: { $0.count > $1.count })
         }
     }
     
@@ -122,6 +127,37 @@ public struct Artist: Codable, Hashable {
     
     public func getReadableGender() -> String {
         return gender == "not applicable" ? "" : (gender ?? "")
+    }
+    
+    public func getTypeAndGender() -> String {
+        var s: String = ""
+        
+        if type != nil && !type.isEmpty {
+            s += type
+        }
+        
+        if !getReadableGender().isEmpty {
+            s += s.isEmpty ? "" : " "
+            s += "(\(getReadableGender()))"
+        }
+        
+        return s
+    }
+    
+    public func commentsIsEmpty() -> Bool {
+        return disambiguation == nil || disambiguation.isEmpty
+    }
+    
+    public func tagsIsEmpty() -> Bool {
+        return tags == nil || tags.filterAndSort().isEmpty
+    }
+    
+    public func ratingIsEmpty() -> Bool {
+        return rating == nil || rating.value == nil || rating.voteCount == 0
+    }
+    
+    public func getRatingStarsText() -> String {
+        return ratingIsEmpty() ? "" : "\(rating.value!) (\(rating.voteCount!))"
     }
     
     

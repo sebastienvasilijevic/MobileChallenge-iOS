@@ -11,11 +11,8 @@ import Foundation
 class ArtistsViewModel: NSObject {
     public var onUpdateArtists: (() -> Void)?
     
-    private(set) var artists: [Artist] = [] {
-        didSet {
-            self.onUpdateArtists?()
-        }
-    }
+    private(set) var artists: [Artist] = []
+    
     private(set) var hasNextPage: Bool = false
     private var lastCursorId: String? = nil
     
@@ -25,18 +22,22 @@ class ArtistsViewModel: NSObject {
         super.init()
     }
     
-    public func fetchArtists(query: String?, first: Int, newList: Bool, completion: @escaping (GraphQLResult<ArtistsQuery.Data>?, Error?) -> Void) {
+    init(artists: [Artist]) {
+        super.init()
+        self.artists = artists
+    }
+    
+    public func fetchArtists(query: String, first: Int, isNewList: Bool, completion: @escaping (GraphQLResult<ArtistsQuery.Data>?, Error?) -> Void) {
         self.cancellableFetch?.cancel()
         self.cancellableFetch = nil
         
-        if newList {
+        if isNewList {
             self.hasNextPage = false
             self.lastCursorId = nil
             self.artists.removeAll()
         }
         
-        let lastQuery: String = (query == nil || query!.isEmpty) ? "*" : "\"\(query!)\""
-        let artistsQuery = ArtistsQuery(search: lastQuery, first: first, after: lastCursorId)
+        let artistsQuery = ArtistsQuery(search: "\"\(query)\"", first: first, after: lastCursorId)
         
         self.cancellableFetch = Network.shared.apollo.fetch(query: artistsQuery) { result in
             switch result {
@@ -50,11 +51,15 @@ class ArtistsViewModel: NSObject {
                         // Convert apiArtist to project object Artist
                         let mArtists: [Artist] = artistsNodes.compactMap({ $0 }).map({ Artist(apiArtistNode: $0) })
                         self.artists.append(contentsOf: mArtists)
+                    } else {
+                        self.artists.removeAll()
                     }
+                    self.onUpdateArtists?()
                     completion(graphQLResult, nil)
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
+                    self.onUpdateArtists?()
                     completion(nil, error)
                 }
             }

@@ -12,8 +12,9 @@ class CustomSearchController: UISearchController {
     override func loadView() {
         super.loadView()
         
+        self.obscuresBackgroundDuringPresentation = false
         self.hidesNavigationBarDuringPresentation = false
-        self.searchBar.setValue("button_done".localized, forKey: "cancelButtonText")
+        self.searchBar.setValue("artists_list_searchBar_button_done".localized, forKey: "cancelButtonText")
         
         if let textfield = searchBar.textField {
             textfield.backgroundColor = kMC.Colors.Background.secondary

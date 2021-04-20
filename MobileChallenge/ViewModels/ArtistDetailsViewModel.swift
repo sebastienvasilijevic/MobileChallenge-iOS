@@ -23,11 +23,20 @@ class ArtistDetailsViewModel: NSObject {
         super.init()
     }
     
-    public func fetchArtists(id: String, completion: ((GraphQLResult<ArtistDetailsQuery.Data>?, Error?) -> Void)?) {
+    init(artist: Artist!) {
+        super.init()
+        self.artist = artist
+    }
+    
+    public func fetchArtist(completion: ((GraphQLResult<ArtistDetailsQuery.Data>?, Error?) -> Void)?) {
         self.cancellableFetch?.cancel()
         self.cancellableFetch = nil
         
-        let artistDetailsQuery = ArtistDetailsQuery(id: id)
+        guard let _artist = self.artist else {
+            return
+        }
+        
+        let artistDetailsQuery = ArtistDetailsQuery(id: _artist.id)
         
         self.cancellableFetch = Network.shared.apollo.fetch(query: artistDetailsQuery) { result in
             switch result {
@@ -46,11 +55,11 @@ class ArtistDetailsViewModel: NSObject {
         }
     }
     
-    public func isArtistBookmarked(artist: Artist) -> Bool {
+    public func isArtistBookmarked() -> Bool {
         return ArtistsData.shared.isBookmarked(artist: artist)
     }
     
-    public func bookmarkAction(artist: Artist) {
+    public func bookmarkAction() {
         return ArtistsData.shared.bookmarkAction(artist: artist)
     }
 }

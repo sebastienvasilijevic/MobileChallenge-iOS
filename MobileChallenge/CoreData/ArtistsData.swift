@@ -18,7 +18,11 @@ class ArtistsData {
         return artistsLocalArray
     }
     
-    public func isBookmarked(artist: Artist) -> Bool {
+    public func isBookmarked(artist: Artist!) -> Bool {
+        if artist == nil {
+            return false
+        }
+        
         let request: NSFetchRequest<ArtistLocal> = ArtistLocal.fetchRequest()
         
         request.predicate = NSPredicate(format: "%K == %@", argumentArray: ["mbid", artist.mbid as String])
@@ -28,7 +32,11 @@ class ArtistsData {
         return !artistsLocalArray.isEmpty
     }
     
-    public func bookmarkAction(artist: Artist) {
+    public func bookmarkAction(artist: Artist!) {
+        if artist == nil {
+            return
+        }
+        
         if isBookmarked(artist: artist) {
             self.unbookmarkArtist(artist: artist)
             
@@ -37,13 +45,21 @@ class ArtistsData {
         }
     }
     
-    private func bookmarkArtist(artist: Artist) {
+    private func bookmarkArtist(artist: Artist!) {
+        if artist == nil {
+            return
+        }
+        
         let artistLocal = ArtistLocal(context: DB.shared.viewContext)
         artistLocal.configure(with: artist)
         DB.shared.saveContext()
     }
     
-    private func unbookmarkArtist(artist: Artist) {
+    private func unbookmarkArtist(artist: Artist!) {
+        if artist == nil {
+            return
+        }
+        
         let request: NSFetchRequest<ArtistLocal> = ArtistLocal.fetchRequest()
         
         request.predicate = NSPredicate(format: "%K == %@", argumentArray: ["mbid", artist.mbid as String])

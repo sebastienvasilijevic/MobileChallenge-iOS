@@ -10,7 +10,7 @@ import UIKit
 
 class CommonArtistListViewController: MainViewController {
     
-    var searchBarText: String = ""
+    lazy var searchBarText: String = ""
     
     var dataSource: UICollectionViewDiffableDataSource<Section, Artist>! = nil
     // Change this property in children
@@ -21,6 +21,34 @@ class CommonArtistListViewController: MainViewController {
     enum Section {
         case artistsList
     }
+    
+    // MARK: - Properties
+    
+    lazy var loadingOverlayView: LoadingOverlayView = .init()
+    
+    lazy var placeholderCollectionView: PlaceholderView = {
+        let v: PlaceholderView = .init(frame: .zero)
+        return v
+    }()
+    
+    // Using SearchController to get the "done" button when editing searchBar
+    lazy var searchController: CustomSearchController = {
+        let v: CustomSearchController = .init(searchResultsController: nil)
+        // This line to call custom UI in loadView before clicking on it
+        _ = v.view
+        v.searchBar.placeholder = "artists_list_searchBar_placeholder".localized
+        return v
+    }()
+    
+    lazy var artistsCollectionView: UICollectionView = {
+        let v = UICollectionView(frame: .init(), collectionViewLayout: self.generateLayout())
+        v.alwaysBounceVertical = true
+        v.backgroundColor = kMC.Colors.Background.primary
+        v.backgroundView = self.placeholderCollectionView
+        v.register(ArtistCell.self, forCellWithReuseIdentifier: ArtistCell.reuseIdentifer)
+        v.register(LoadingReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: LoadingReusableView.reuseIdentifer)
+        return v
+    }()
     
     // MARK: - View Life Cycle
 
@@ -36,6 +64,14 @@ class CommonArtistListViewController: MainViewController {
         self.configureDataSource()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        // Debug a glitch that occurs on pushVC because of searchBar
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         self.updateCollectionViewLayout()
@@ -46,35 +82,48 @@ class CommonArtistListViewController: MainViewController {
     private func setupUI() {
         self.definesPresentationContext = true
         self.navigationItem.titleView = searchController.searchBar
+        self.navigationItem.hidesSearchBarWhenScrolling = false
         
         self.view.addSubview(self.artistsCollectionView)
+        self.view.addSubview(self.loadingOverlayView)
         
-        self.artistsCollectionView.snp.makeConstraints { make in
+        self.configurePlaceholderView()
+        
+        artistsCollectionView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
+        }
+        
+        loadingOverlayView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.size.equalTo(100)
         }
     }
     
-    // MARK: - Properties
-    
-    // Using SearchController to get the "done" button when editing searchBar
-    lazy var searchController: CustomSearchController = {
-        let v: CustomSearchController = .init(searchResultsController: nil)
-        // This line to call custom UI in loadView before clicking on it
-        _ = v.view
-        v.searchBar.placeholder = "artists_list_searchBar_placeholder".localized
-        return v
-    }()
-    
-    lazy var artistsCollectionView: UICollectionView = {
-        let v = UICollectionView(frame: .init(), collectionViewLayout: self.generateLayout())
-        v.alwaysBounceVertical = true
-        v.backgroundColor = kMC.Colors.Background.primary
-        v.register(ArtistCell.self, forCellWithReuseIdentifier: ArtistCell.reuseIdentifer)
-        v.register(LoadingReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: LoadingReusableView.reuseIdentifer)
-        return v
-    }()
-    
     // MARK: - CollectionView layout methods
+    
+    /// Configure Collection BackgroundView
+    func configurePlaceholderView() {
+        
+    }
+    
+    /// Update CollectionView BackgroundView
+    public func updateCollectionBackgroundView(emptyBarImg: String, emptyBarText: String, notFoundImg: String, notFoundText: String) {
+        let imageConfiguration = UIImage.SymbolConfiguration(weight: .bold)
+        var imageName: String = ""
+        var text: String = ""
+        
+        if self.searchBarText.isEmpty {
+            imageName = emptyBarImg
+            text = emptyBarText
+            
+        } else {
+            imageName = notFoundImg
+            text = notFoundText
+        }
+        
+        self.placeholderCollectionView.setImage(image: UIImage(systemName: imageName, withConfiguration: imageConfiguration)?.withTintColor(kMC.Colors.grayLight, renderingMode: .alwaysOriginal))
+        self.placeholderCollectionView.setText(text: text)
+    }
     
     /// Update CollectionViewLayout (for example on orientation change)
     func updateCollectionViewLayout() {
@@ -140,10 +189,22 @@ class CommonArtistListViewController: MainViewController {
     
     // MARK: - Push controller
     
+    /// Push ViewController to Details
     func pushArtistDetails(artists: [Artist], at index: Int) {
         let vc: ArtistDetailsPageViewController = .init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
-        vc.data = artists
+        vc.viewModel = .init(artists: artists)
         vc.openedIndex = index
         self.navigationController?.pushViewController(vc, animated: true)
+        
+        self.keepSearchControllerState()
+    }
+    
+    // MARK: - SearchController methods
+    
+    /// Keep SearchController state (make lose focus and keep text of the searchBar)
+    func keepSearchControllerState() {
+        // Lose focus on searchController and keep text
+        self.searchController.isActive = false
+        self.searchController.searchBar.text = self.searchBarText
     }
 }

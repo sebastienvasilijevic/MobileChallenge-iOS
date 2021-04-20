@@ -11,7 +11,7 @@ import UIKit
 class LoadingOverlayView: UIView {
     
     private lazy var activityIndicator: UIActivityIndicatorView = {
-        let v: UIActivityIndicatorView = .init(style: .medium)
+        let v: UIActivityIndicatorView = .init(style: .large)
         return v
     }()
 

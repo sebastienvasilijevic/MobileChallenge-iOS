@@ -53,6 +53,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window?.makeKeyAndVisible()
     }
     
+    // MARK: - Utils methods
+    
+    func presentFirstTab() {
+        self.tabBarController.selectedIndex = 0
+    }
+    
     
     // MARK: - Core Data stack
 

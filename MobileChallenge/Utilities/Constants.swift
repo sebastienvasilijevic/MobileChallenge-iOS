@@ -22,6 +22,7 @@ struct kMC {
     struct Colors {
         static let main = UIColor(named: "mainColor")!
         static let highlight = UIColor(named: "highlightColor")!
+        static let grayLight = UIColor(named: "grayLight")!
         
         struct Text {
             static let primary = UIColor(named: "textColor")!
@@ -54,6 +55,9 @@ struct kMC {
         static let magnifyingglass: String = "magnifyingglass"
         static let bookmark: String = "bookmark"
         static let bookmarkFill: String = "bookmark.fill"
+        static let bookmarkCircle: String = "bookmark.circle"
+        static let personCircleQuestionmark: String = "person.crop.circle.badge.questionmark"
+        static let personCircleXmark: String = "person.crop.circle.badge.xmark"
     }
     
     /// Differents date formats

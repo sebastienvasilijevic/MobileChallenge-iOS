@@ -53,6 +53,26 @@ class BookmarksViewController: CommonArtistListViewController {
         self.artistsCollectionView.refreshControl = self.collectionRefreshControl
     }
     
+    /// Configure Collection BackgroundView
+    override func configurePlaceholderView() {
+        self.placeholderCollectionView.addButton(icon: UIImage(systemName: kMC.Images.magnifyingglass), title: "bookmarks_list_placeholder_button_text".localized, type: .primary) { placeholderView in
+            
+            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                appDelegate.presentFirstTab()
+            }
+        }
+    }
+    
+    /// Configure CollectionView BackgroundView
+    public func configureCollectionBackgroundView() {
+        super.updateCollectionBackgroundView(emptyBarImg: kMC.Images.bookmarkCircle,
+                                             emptyBarText: "bookmarks_list_placeholder_searchArtist_search_text".localized,
+                                             notFoundImg: kMC.Images.personCircleXmark,
+                                             notFoundText: String(format: "bookmarks_list_placeholder_noArtist_search_text".localized, self.searchBarText))
+        
+        self.bookmarksViewModel.filteredBookmarks.isEmpty ? self.artistsCollectionView.showBackgroundView() : self.artistsCollectionView.hideBackgroundView()
+    }
+    
     /// Configure CollectionView dataSource
     override func configureDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Section, Artist>(collectionView: self.artistsCollectionView) {
@@ -64,7 +84,7 @@ class BookmarksViewController: CommonArtistListViewController {
             
             cell.bookmarkHandler = { [weak self] cell in
                 self?.bookmarksViewModel.bookmarkAction(artist: cell.artist)
-                self?.artistsCollectionView.reloadData()
+                self?.fetchBookmarks()
             }
             
             return cell
@@ -87,6 +107,7 @@ class BookmarksViewController: CommonArtistListViewController {
     func configureArtistsViewModel() {
         self.bookmarksViewModel.onUpdateBookmarks = { [weak self] in
             self?.updateCollectionView()
+            self?.configureCollectionBackgroundView()
         }
     }
     
@@ -109,6 +130,7 @@ extension BookmarksViewController: UISearchBarDelegate {
     
     func searchBarTextFetch() {
         self.bookmarksViewModel.filterBookmarks(with: searchBarText)
+        self.configureCollectionBackgroundView()
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {

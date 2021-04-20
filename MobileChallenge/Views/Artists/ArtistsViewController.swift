@@ -29,12 +29,32 @@ class ArtistsViewController: CommonArtistListViewController {
         
         self.searchController.searchBar.delegate = self
         self.artistsCollectionView.delegate = self
+        self.updateBackgroundView()
+        self.artistsCollectionView.showBackgroundView()
         self.configureArtistsViewModel()
-        self.fetchArtists(newList: true)
+//        self.loadingOverlayView.startLoading()
+//        self.fetchArtists(isNewList: true) { [weak self] in
+//            self?.loadingOverlayView.stopLoading()
+//        }
     }
     
     
     // MARK: - CollectionView layout methods
+    
+    /// Configure Collection BackgroundView
+    override func configurePlaceholderView() {
+        self.placeholderCollectionView.addButton(icon: UIImage(systemName: kMC.Images.magnifyingglass), title: "artists_list_placeholder_button_text".localized, type: .primary) { [weak self] placeholderView in
+            self?.searchController.searchBar.becomeFirstResponder()
+        }
+    }
+    
+    /// Update CollectionView BackgroundView
+    public func updateBackgroundView() {
+        super.updateCollectionBackgroundView(emptyBarImg: kMC.Images.personCircleQuestionmark,
+                                             emptyBarText: "artists_list_placeholder_searchArtist_search_text".localized,
+                                             notFoundImg: kMC.Images.personCircleXmark,
+                                             notFoundText: String(format: "artists_list_placeholder_noArtist_search_text".localized, self.searchBarText))
+    }
     
     /// Configure CollectionView dataSource
     override func configureDataSource() {
@@ -84,12 +104,12 @@ class ArtistsViewController: CommonArtistListViewController {
         }
     }
     
-    /// Fetch artists for a `newList`
+    /// Fetch artists for a `isNewList`
     ///
-    /// - Parameter newList: If true, the current collectionView is cleared before fetching.
+    /// - Parameter isNewList: If true, the current collectionView is cleared before fetching.
     /// - Parameter completion: The callback to execute after fetch has done.
-    func fetchArtists(newList: Bool, completion: (() -> Void)? = nil) {
-        self.artistsViewModel.fetchArtists(query: self.searchController.searchBar.text, first: self.numberItemPerPage, newList: newList) { (result, error) in
+    func fetchArtists(isNewList: Bool, completion: (() -> Void)? = nil) {
+        self.artistsViewModel.fetchArtists(query: self.searchBarText, first: self.numberItemPerPage, isNewList: isNewList) { (result, error) in
             completion?()
         }
     }
@@ -99,17 +119,24 @@ class ArtistsViewController: CommonArtistListViewController {
 
 extension ArtistsViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.searchBarTextFetch), object: nil)
-        self.perform(#selector(self.searchBarTextFetch), with: nil, afterDelay: 0.3)
-        
         // Save current text on change to re-assign it later (on EndEditing)
         searchBarText = searchBar.text ?? ""
+        
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.searchBarTextFetch), object: nil)
+        self.perform(#selector(self.searchBarTextFetch), with: nil, afterDelay: 0.3)
     }
     
     @objc func searchBarTextFetch() {
+        self.loadingOverlayView.startLoading()
         self.searchController.isLoading = true
-        self.fetchArtists(newList: true) {
-            self.searchController.isLoading = false
+        self.artistsCollectionView.hideBackgroundView()
+        self.fetchArtists(isNewList: true) { [weak self] in
+            self?.loadingOverlayView.stopLoading()
+            self?.searchController.isLoading = false
+            if self?.artistsViewModel.artists.isEmpty ?? true {
+                self?.updateBackgroundView()
+                self?.artistsCollectionView.showBackgroundView()
+            }
         }
     }
     
@@ -126,8 +153,8 @@ extension ArtistsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if indexPath.item == self.artistsViewModel.artists.count-3 && !self.alreadyFetchingFromScrollBottom && self.artistsViewModel.hasNextPage {
             self.alreadyFetchingFromScrollBottom = true
-            self.fetchArtists(newList: false) {
-                self.alreadyFetchingFromScrollBottom = false
+            self.fetchArtists(isNewList: false) { [weak self] in
+                self?.alreadyFetchingFromScrollBottom = false
             }
         }
     }
