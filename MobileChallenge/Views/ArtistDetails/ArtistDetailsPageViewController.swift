@@ -22,7 +22,7 @@ class ArtistDetailsPageViewController: UIPageViewController {
     private lazy var detailViewControllers: [UIViewController] = .init()
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .darkContent
+        return .lightContent
     }
     
     // MARK: - View Life Cycle

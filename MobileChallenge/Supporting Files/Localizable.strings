@@ -18,7 +18,7 @@
 "artists_list_placeholder_noArtist_search_text" = "There is no artist found for `%@`\nTry something else.";
 "artists_list_placeholder_button_text" = "Search for artists";
 
-"bookmarks_list_placeholder_searchArtist_search_text" = "Search for your favorites artists in the search list";
+"bookmarks_list_placeholder_searchArtist_search_text" = "All of your favorites artists will be listed here";
 "bookmarks_list_placeholder_noArtist_search_text" = "There is no artist found in your bookmarks for `%@`\nTry something else.";
 "bookmarks_list_placeholder_button_text" = "Search for new artists";
 

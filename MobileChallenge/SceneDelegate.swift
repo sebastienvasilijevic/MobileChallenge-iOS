@@ -87,18 +87,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     /// Create a placeholder for the detailsView of the SplitViewController (when no artist is selected)
     func createPlaceholderDetails() -> MainViewController {
-        let imageConfiguration = UIImage.SymbolConfiguration(weight: .bold)
-        let image = UIImage(systemName: kMC.Images.magnifyingglass, withConfiguration: imageConfiguration)?.withTintColor(kMC.Colors.grayLight, renderingMode: .alwaysOriginal)
-        
-        let placeholderView: PlaceholderView = .init(frame: .zero, image: image, text: "artist_details_placeholder_text".localized)
-        
-        let vc: MainViewController = .init()
-        vc.view.addSubview(placeholderView)
-        
-        placeholderView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
+        let vc: ArtistDetailsPlaceholderViewController = .init()
         return vc
     }
     

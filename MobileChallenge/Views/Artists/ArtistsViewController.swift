@@ -51,7 +51,7 @@ class ArtistsViewController: CommonArtistListViewController {
     
     /// Refresh CollectionView BackgroundView
     public func refreshBackgroundView() {
-        super.refreshCollectionBackgroundView(emptyBarImg: kMC.Images.personCircleQuestionmark,
+        super.refreshCollectionBackgroundView(emptyBarImg: kMC.Images.magnifyingglass,
                                              emptyBarText: "artists_list_placeholder_searchArtist_search_text".localized,
                                              notFoundImg: kMC.Images.personCircleXmark,
                                              notFoundText: String(format: "artists_list_placeholder_noArtist_search_text".localized, self.searchBarText))

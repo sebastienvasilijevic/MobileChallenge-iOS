@@ -22,6 +22,11 @@ class CustomSearchController: UISearchController {
             textfield.textColor = kMC.Colors.Text.primary
             textfield.tintColor = kMC.Colors.Text.primary
         }
+        
+        // Workaround to hide default toolbar on iPad that cause multiple logs to show in console (on keyboard open) since iOS 14
+        let item = self.searchBar.inputAssistantItem
+        item.leadingBarButtonGroups = []
+        item.trailingBarButtonGroups = []
     }
     
     public var isLoading: Bool = false {

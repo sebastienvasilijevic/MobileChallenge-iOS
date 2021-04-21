@@ -77,6 +77,8 @@ class CommonArtistListViewController: MainViewController {
         // Debug glitch with searchBar on push
         navigationController?.view.setNeedsLayout() // force update layout
         navigationController?.view.layoutIfNeeded() // to fix height of the navigation bar
+        
+        self.keepSearchControllerState()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -110,7 +112,7 @@ class CommonArtistListViewController: MainViewController {
     
     /// Configure Collection BackgroundView
     func configurePlaceholderView() {
-        
+        fatalError("Must Override `configurePlaceholderView`")
     }
     
     /// Refresh CollectionView BackgroundView
@@ -128,8 +130,9 @@ class CommonArtistListViewController: MainViewController {
             text = notFoundText
         }
         
-        self.placeholderCollectionView.setImage(image: UIImage(systemName: imageName, withConfiguration: imageConfiguration)?.withTintColor(kMC.Colors.grayLight, renderingMode: .alwaysOriginal))
+        self.placeholderCollectionView.setImage(image: UIImage(systemName: imageName, withConfiguration: imageConfiguration)?.withTintColor(kMC.Colors.grayLight.withAlphaComponent(0.7), renderingMode: .alwaysOriginal))
         self.placeholderCollectionView.setText(text: text)
+        self.placeholderCollectionView.textLabel.textColor = kMC.Colors.Text.primary.withAlphaComponent(0.7)
     }
     
     /// Update CollectionViewLayout (for example on orientation change)
