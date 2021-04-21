@@ -14,6 +14,7 @@ class CustomSearchController: UISearchController {
         
         self.obscuresBackgroundDuringPresentation = false
         self.hidesNavigationBarDuringPresentation = false
+        self.searchBar.returnKeyType = .done
         self.searchBar.setValue("artists_list_searchBar_button_done".localized, forKey: "cancelButtonText")
         
         if let textfield = searchBar.textField {

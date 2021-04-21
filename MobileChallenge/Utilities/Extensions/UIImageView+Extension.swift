@@ -12,15 +12,15 @@ extension UIImageView {
     @discardableResult
     func downloadImage(from uri: String, downsampling: Bool) -> DownloadTask? {
         if let url = URL(string: uri) {
-            var options: KingfisherOptionsInfo = [
-                .cacheOriginalImage,
-                .loadDiskFileSynchronously
-            ]
+            var options: KingfisherOptionsInfo = []
             if downsampling {
                 self.layoutIfNeeded()
                 options.append(.processor(DownsamplingImageProcessor(size: self.bounds.size)))
                 options.append(.scaleFactor(UIScreen.main.scale))
             }
+            
+            options.append(.cacheOriginalImage)
+            options.append(.loadDiskFileSynchronously)
             
             self.kf.indicatorType = .activity
             return self.kf.setImage(

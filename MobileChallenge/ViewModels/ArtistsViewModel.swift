@@ -11,6 +11,8 @@ import Foundation
 class ArtistsViewModel: NSObject {
     public var onUpdateArtists: (() -> Void)?
     
+    private var artistBookmarkObserver: NSObjectProtocol?
+    
     private(set) var artists: [Artist] = []
     
     private(set) var hasNextPage: Bool = false
@@ -18,12 +20,22 @@ class ArtistsViewModel: NSObject {
     
     private var cancellableFetch: Cancellable?
     
-    override init() {
-        super.init()
+    deinit {
+        if let artistBookmarkObserver = self.artistBookmarkObserver {
+            NotificationCenter.default.removeObserver(artistBookmarkObserver, name: ArtistsData.bookmarkDidChange, object: nil)
+        }
     }
     
-    init(artists: [Artist]) {
+    override init() {
         super.init()
+        
+        self.artistBookmarkObserver = NotificationCenter.default.addObserver(forName: ArtistsData.bookmarkDidChange, object: nil, queue: nil, using: { [weak self] (data) in
+            self?.onUpdateArtists?()
+        })
+    }
+    
+    convenience init(artists: [Artist]) {
+        self.init()
         self.artists = artists
     }
     

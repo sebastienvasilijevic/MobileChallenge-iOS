@@ -8,6 +8,10 @@
 import CoreData
 
 class ArtistsData {
+    static let bookmarkDidChange = Notification.Name("bookmarkDidChange")
+    static let artistObject = "artistObject"
+    static let artistIsBookmarked = "isBookmarked"
+    
     static let shared = ArtistsData()
     
     public func all() -> [ArtistLocal] {
@@ -32,21 +36,25 @@ class ArtistsData {
         return !artistsLocalArray.isEmpty
     }
     
-    public func bookmarkAction(artist: Artist!) {
-        if artist == nil {
+    public func bookmarkAction(artist _artist: Artist!) {
+        guard let artist = _artist else {
             return
         }
         
         if isBookmarked(artist: artist) {
             self.unbookmarkArtist(artist: artist)
+            NotificationCenter.default.post(name: ArtistsData.bookmarkDidChange, object: self, userInfo: [ArtistsData.artistIsBookmarked: false,
+                                                                                                          ArtistsData.artistObject: artist])
             
         } else {
             self.bookmarkArtist(artist: artist)
+            NotificationCenter.default.post(name: ArtistsData.bookmarkDidChange, object: self, userInfo: [ArtistsData.artistIsBookmarked: true,
+                                                                                                          ArtistsData.artistObject: artist])
         }
     }
     
-    private func bookmarkArtist(artist: Artist!) {
-        if artist == nil {
+    private func bookmarkArtist(artist _artist: Artist!) {
+        guard let artist = _artist else {
             return
         }
         
@@ -55,8 +63,8 @@ class ArtistsData {
         DB.shared.saveContext()
     }
     
-    private func unbookmarkArtist(artist: Artist!) {
-        if artist == nil {
+    private func unbookmarkArtist( artist _artist: Artist!) {
+        guard let artist = _artist else {
             return
         }
         

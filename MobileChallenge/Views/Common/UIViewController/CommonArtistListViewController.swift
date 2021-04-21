@@ -42,6 +42,7 @@ class CommonArtistListViewController: MainViewController {
     
     lazy var artistsCollectionView: UICollectionView = {
         let v = UICollectionView(frame: .init(), collectionViewLayout: self.generateLayout())
+        v.keyboardDismissMode = .onDrag
         v.alwaysBounceVertical = true
         v.backgroundColor = kMC.Colors.Background.primary
         v.backgroundView = self.placeholderCollectionView
@@ -66,10 +67,16 @@ class CommonArtistListViewController: MainViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
-        // Debug a glitch that occurs on pushVC because of searchBar
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
-        self.navigationController?.setNavigationBarHidden(false, animated: false)
+        // Debug glitch with searchBar on push
+        navigationController?.view.setNeedsLayout() // force update layout
+        navigationController?.view.layoutIfNeeded() // to fix height of the navigation bar
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Debug glitch with searchBar on push
+        navigationController?.view.setNeedsLayout() // force update layout
+        navigationController?.view.layoutIfNeeded() // to fix height of the navigation bar
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -106,8 +113,8 @@ class CommonArtistListViewController: MainViewController {
         
     }
     
-    /// Update CollectionView BackgroundView
-    public func updateCollectionBackgroundView(emptyBarImg: String, emptyBarText: String, notFoundImg: String, notFoundText: String) {
+    /// Refresh CollectionView BackgroundView
+    public func refreshCollectionBackgroundView(emptyBarImg: String, emptyBarText: String, notFoundImg: String, notFoundText: String) {
         let imageConfiguration = UIImage.SymbolConfiguration(weight: .bold)
         var imageName: String = ""
         var text: String = ""
@@ -190,11 +197,17 @@ class CommonArtistListViewController: MainViewController {
     // MARK: - Push controller
     
     /// Push ViewController to Details
-    func pushArtistDetails(artists: [Artist], at index: Int) {
+    func presentArtistDetails(artists: [Artist], at index: Int) {
         let vc: ArtistDetailsPageViewController = .init(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
         vc.viewModel = .init(artists: artists)
         vc.openedIndex = index
-        self.navigationController?.pushViewController(vc, animated: true)
+        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            let nc: MainNavigationController = .init(rootViewController: vc)
+            self.splitViewController?.showDetailViewController(nc, sender: self)
+        } else {
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
         
         self.keepSearchControllerState()
     }

@@ -9,6 +9,8 @@
 "tabBar_search_artists_label" = "Artists";
 "tabBar_bookmarks_label" = "Bookmarks";
 
+"artist_details_placeholder_text" = "Tap on an artist to show its details here.";
+
 "artists_list_searchBar_placeholder" = "Search for artists";
 "artists_list_searchBar_button_done" = "Done";
 
@@ -20,6 +22,8 @@
 "bookmarks_list_placeholder_noArtist_search_text" = "There is no artist found in your bookmarks for `%@`\nTry something else.";
 "bookmarks_list_placeholder_button_text" = "Search for new artists";
 
+"artistDetails_paging_tutorial_text" = "You can swipe between artists by scrolling left or right.";
+"artistDetails_paging_tutorial_button" = "OK";
 "artistDetails_comments_label" = "COMMENTS";
 "artistDetails_associatedTerms_label" = "ASSOCIATED TERMS";
 "artistDetails_rating_label" = "RATING";

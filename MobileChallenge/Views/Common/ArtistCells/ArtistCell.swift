@@ -181,6 +181,7 @@ extension ArtistCell {
             return
         }
         
+        self.contentView.layoutIfNeeded()
         self.downloadTask = self.artistImageView.downloadImage(from: value.getFirstImageUri(), downsampling: true)
         self.configureBookmarkButton()
         self.categoryLabel.text = value.type ?? ""

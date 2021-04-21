@@ -15,6 +15,8 @@ class ArtistDetailsViewController: MainViewController {
     var artistDetailsViewModel: ArtistDetailsViewModel!
     var pageIndex: Int!
     
+    private var artistBookmarkObserver: NSObjectProtocol?
+    
     private var downloadTask: DownloadTask?
     
     // MARK: - Properties
@@ -174,10 +176,12 @@ class ArtistDetailsViewController: MainViewController {
         }
         
         artistImageView.snp.makeConstraints { make in
-            make.height.equalTo(artistImageView.snp.width).offset(100)
+            make.height.greaterThanOrEqualTo(artistImageView.snp.width).priority(.high)
+            make.height.lessThanOrEqualTo(450)
         }
     }
     
+    /// Create StackView with main title
     func addStackView(withTitle title: String) -> UIStackView {
         let label: UILabel = .init()
         label.font = kMC.Font.regular.withSize(kMC.Font.defaultSize-3)
@@ -190,9 +194,10 @@ class ArtistDetailsViewController: MainViewController {
         return stackView
     }
     
-    func fillUIData() {
+    func refreshUI() {
         self.downloadTask?.cancel()
         self.artistImageView.image = UIImage(named: kMC.Images.noPictureImage)
+        self.tagsAssociatedTerms.deleteAllTags()
         
         guard let artist = self.artistDetailsViewModel.artist else {
             return
@@ -225,7 +230,7 @@ class ArtistDetailsViewController: MainViewController {
     func configureArtistDetailsViewModel() {
         self.artistDetailsViewModel.onUpdateArtist = { [weak self] in
             self?.loadingOverlayView.stopLoading()
-            self?.fillUIData()
+            self?.refreshUI()
         }
     }
     

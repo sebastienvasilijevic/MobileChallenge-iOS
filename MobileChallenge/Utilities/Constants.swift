@@ -50,6 +50,7 @@ struct kMC {
         // Images in Assets
         static let arrowDown: String = "arrowDown"
         static let noPictureImage: String = "noPictureImage"
+        static let swipeGestureIcon: String = "swipeGestureIcon"
         
         // Images in SF Symbols
         static let magnifyingglass: String = "magnifyingglass"
@@ -60,9 +61,8 @@ struct kMC {
         static let personCircleXmark: String = "person.crop.circle.badge.xmark"
     }
     
-    /// Differents date formats
-//    struct DateFormat {
-//        static let api: String = "yyyy-MM-dd'T'HH:mm:ssZ"
-//        static let readable: String = "dd MMM yyyy à HH:mm"
-//    }
+    /// UserDefault keys
+    struct UserDefaults {
+        static let tutoArtistDetailsPaging = "tutoArtistDetailsPaging"
+    }
 }

@@ -17,13 +17,12 @@ class ArtistDetailsPageViewController: UIPageViewController {
             self.currentItemIndex = self.openedIndex
         }
     }
-    
     var currentItemIndex: Int!
     
     private lazy var detailViewControllers: [UIViewController] = .init()
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        return .darkContent
     }
     
     // MARK: - View Life Cycle
@@ -40,19 +39,17 @@ class ArtistDetailsPageViewController: UIPageViewController {
         self.delegate = self
         self.dataSource = self
         self.setBookmarkNavigationItem(for: self.currentItemIndex)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        // Debug a glitch that occurs on pushVC because of searchBar
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
-        self.navigationController?.setNavigationBarHidden(false, animated: false)
+        self.configureArtistsViewModel()
+        self.showPagingTuto()
     }
     
     // MARK: - Setup UI
     
     private func setupUI() {
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            self.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
+        }
+        
         self.view.backgroundColor = kMC.Colors.Background.primary
         
         if let viewModel = self.viewModel {
@@ -85,7 +82,43 @@ class ArtistDetailsPageViewController: UIPageViewController {
         self.navigationItem.rightBarButtonItem = .init(image: bookmarkImage, style: .plain, target: self, action: #selector(bookmarkAction))
     }
     
+    private func showPagingTuto() {
+        UserDefaults.standard.executeIfFalseThenToggle(forKey: kMC.UserDefaults.tutoArtistDetailsPaging) {
+            let tutoView: PlaceholderView = .init(frame: .zero, image: UIImage(named: kMC.Images.swipeGestureIcon), text: "artistDetails_paging_tutorial_text".localized)
+            tutoView.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+            tutoView.textLabel.textColor = .white
+            
+            tutoView.addButton(icon: nil, title: "artistDetails_paging_tutorial_button".localized, type: .primary) { placeholderView in
+                placeholderView.removeFromSuperview()
+            }
+            
+            self.navigationController?.view.addSubview(tutoView)
+            
+            tutoView.snp.makeConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        }
+    }
+    
+    // MARK: - Update methods
+    
+    /// Configure Artists ViewModel (auto refresh on data update)
+    func configureArtistsViewModel() {
+        if let viewModel = self.viewModel {
+            viewModel.onUpdateArtists = { [weak self] in
+                guard let index = self?.currentItemIndex else {
+                    return
+                }
+                self?.setBookmarkNavigationItem(for: index)
+            }
+        }
+    }
+    
     // MARK: - Methods
+    
+    @objc func dismissAction() {
+        self.dismiss(animated: true, completion: nil)
+    }
     
     @objc func bookmarkAction() {
         guard let vcs = self.detailViewControllers as? [ArtistDetailsViewController], self.currentItemIndex < vcs.count else {

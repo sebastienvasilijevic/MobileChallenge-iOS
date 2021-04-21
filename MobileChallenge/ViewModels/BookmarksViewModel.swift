@@ -10,6 +10,10 @@ import Foundation
 class BookmarksViewModel: NSObject {
     public var onUpdateBookmarks: (() -> Void)?
     
+    private var textFilter: String = ""
+    
+    private var artistBookmarkObserver: NSObjectProtocol?
+    
     private(set) var bookmarks: [Artist] = [] {
         didSet {
             self.filteredBookmarks = self.bookmarks
@@ -23,12 +27,26 @@ class BookmarksViewModel: NSObject {
     }
     
     
+    deinit {
+        if let artistBookmarkObserver = self.artistBookmarkObserver {
+            NotificationCenter.default.removeObserver(artistBookmarkObserver, name: ArtistsData.bookmarkDidChange, object: nil)
+        }
+    }
+    
     override init() {
         super.init()
+        
+        self.artistBookmarkObserver = NotificationCenter.default.addObserver(forName: ArtistsData.bookmarkDidChange, object: nil, queue: nil, using: { [weak self] (data) in
+            if let textFilter = self?.textFilter {
+                self?.fetchBookmarks(textFilter: textFilter)
+            }
+        })
     }
     
     
     public func fetchBookmarks(textFilter: String) {
+        self.textFilter = textFilter
+        
         // Convert ArtistLocal (from CoreData) to project Artist object
         self.bookmarks = ArtistsData.shared.all().map({ Artist(artistLocal: $0) })
         

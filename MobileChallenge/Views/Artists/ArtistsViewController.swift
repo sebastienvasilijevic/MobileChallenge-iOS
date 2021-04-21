@@ -28,18 +28,19 @@ class ArtistsViewController: CommonArtistListViewController {
         super.viewDidLoad()
         
         self.searchController.searchBar.delegate = self
-        self.artistsCollectionView.delegate = self
-        self.updateBackgroundView()
-        self.artistsCollectionView.showBackgroundView()
+        self.refreshBackgroundView()
+        self.configureCollectionView()
         self.configureArtistsViewModel()
-//        self.loadingOverlayView.startLoading()
-//        self.fetchArtists(isNewList: true) { [weak self] in
-//            self?.loadingOverlayView.stopLoading()
-//        }
     }
     
     
     // MARK: - CollectionView layout methods
+    
+    /// Configure CollectionView
+    func configureCollectionView() {
+        self.artistsCollectionView.delegate = self
+        self.artistsCollectionView.showBackgroundView()
+    }
     
     /// Configure Collection BackgroundView
     override func configurePlaceholderView() {
@@ -48,9 +49,9 @@ class ArtistsViewController: CommonArtistListViewController {
         }
     }
     
-    /// Update CollectionView BackgroundView
-    public func updateBackgroundView() {
-        super.updateCollectionBackgroundView(emptyBarImg: kMC.Images.personCircleQuestionmark,
+    /// Refresh CollectionView BackgroundView
+    public func refreshBackgroundView() {
+        super.refreshCollectionBackgroundView(emptyBarImg: kMC.Images.personCircleQuestionmark,
                                              emptyBarText: "artists_list_placeholder_searchArtist_search_text".localized,
                                              notFoundImg: kMC.Images.personCircleXmark,
                                              notFoundText: String(format: "artists_list_placeholder_noArtist_search_text".localized, self.searchBarText))
@@ -134,7 +135,7 @@ extension ArtistsViewController: UISearchBarDelegate {
             self?.loadingOverlayView.stopLoading()
             self?.searchController.isLoading = false
             if self?.artistsViewModel.artists.isEmpty ?? true {
-                self?.updateBackgroundView()
+                self?.refreshBackgroundView()
                 self?.artistsCollectionView.showBackgroundView()
             }
         }
@@ -174,6 +175,6 @@ extension ArtistsViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        self.pushArtistDetails(artists: self.artistsViewModel.artists, at: indexPath.item)
+        self.presentArtistDetails(artists: self.artistsViewModel.artists, at: indexPath.item)
     }
 }

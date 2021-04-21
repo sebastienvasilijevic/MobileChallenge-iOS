@@ -35,13 +35,9 @@ class BookmarksViewController: CommonArtistListViewController {
         super.viewDidLoad()
         
         self.searchController.searchBar.delegate = self
+        self.refreshBackgroundView()
         self.configureCollectionView()
         self.configureArtistsViewModel()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
         self.fetchBookmarks()
     }
     
@@ -57,15 +53,15 @@ class BookmarksViewController: CommonArtistListViewController {
     override func configurePlaceholderView() {
         self.placeholderCollectionView.addButton(icon: UIImage(systemName: kMC.Images.magnifyingglass), title: "bookmarks_list_placeholder_button_text".localized, type: .primary) { placeholderView in
             
-            if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                appDelegate.presentFirstTab()
+            if let sceneDelegate = self.sceneDelegate() {
+                sceneDelegate.presentFirstTab()
             }
         }
     }
     
-    /// Configure CollectionView BackgroundView
-    public func configureCollectionBackgroundView() {
-        super.updateCollectionBackgroundView(emptyBarImg: kMC.Images.bookmarkCircle,
+    /// Refresh CollectionView BackgroundView
+    public func refreshBackgroundView() {
+        super.refreshCollectionBackgroundView(emptyBarImg: kMC.Images.bookmarkCircle,
                                              emptyBarText: "bookmarks_list_placeholder_searchArtist_search_text".localized,
                                              notFoundImg: kMC.Images.personCircleXmark,
                                              notFoundText: String(format: "bookmarks_list_placeholder_noArtist_search_text".localized, self.searchBarText))
@@ -107,7 +103,7 @@ class BookmarksViewController: CommonArtistListViewController {
     func configureArtistsViewModel() {
         self.bookmarksViewModel.onUpdateBookmarks = { [weak self] in
             self?.updateCollectionView()
-            self?.configureCollectionBackgroundView()
+            self?.refreshBackgroundView()
         }
     }
     
@@ -130,7 +126,7 @@ extension BookmarksViewController: UISearchBarDelegate {
     
     func searchBarTextFetch() {
         self.bookmarksViewModel.filterBookmarks(with: searchBarText)
-        self.configureCollectionBackgroundView()
+        self.refreshBackgroundView()
     }
     
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -146,6 +142,6 @@ extension BookmarksViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         
-        self.pushArtistDetails(artists: self.bookmarksViewModel.filteredBookmarks, at: indexPath.item)
+        self.presentArtistDetails(artists: self.bookmarksViewModel.filteredBookmarks, at: indexPath.item)
     }
 }
