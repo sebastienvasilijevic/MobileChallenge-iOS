@@ -259,6 +259,22 @@
 			path = ArtistCells;
 			sourceTree = "<group>";
 		};
+		E2A0C157263332170091E6EC /* ArtistsList */ = {
+			isa = PBXGroup;
+			children = (
+				7654352825F8D5C800070C3B /* ArtistsViewController.swift */,
+			);
+			path = ArtistsList;
+			sourceTree = "<group>";
+		};
+		E2A0C158263332240091E6EC /* BookmarksList */ = {
+			isa = PBXGroup;
+			children = (
+				E2DFBB3F262BE934006FAAD6 /* BookmarksViewController.swift */,
+			);
+			path = BookmarksList;
+			sourceTree = "<group>";
+		};
 		E2CE9535262A21B0008A6959 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -289,7 +305,6 @@
 			children = (
 				E2DFBB2E262BB55D006FAAD6 /* Common */,
 				E2CE953E262A4601008A6959 /* Artists */,
-				E2DFBB3E262BE907006FAAD6 /* Bookmarks */,
 				E2DFBB4D262CA175006FAAD6 /* ArtistDetails */,
 			);
 			path = Views;
@@ -298,7 +313,9 @@
 		E2CE953E262A4601008A6959 /* Artists */ = {
 			isa = PBXGroup;
 			children = (
-				7654352825F8D5C800070C3B /* ArtistsViewController.swift */,
+				E2DFBB43262C7710006FAAD6 /* CommonArtistListViewController.swift */,
+				E2A0C157263332170091E6EC /* ArtistsList */,
+				E2A0C158263332240091E6EC /* BookmarksList */,
 			);
 			path = Artists;
 			sourceTree = "<group>";
@@ -341,14 +358,6 @@
 			path = CoreData;
 			sourceTree = "<group>";
 		};
-		E2DFBB3E262BE907006FAAD6 /* Bookmarks */ = {
-			isa = PBXGroup;
-			children = (
-				E2DFBB3F262BE934006FAAD6 /* BookmarksViewController.swift */,
-			);
-			path = Bookmarks;
-			sourceTree = "<group>";
-		};
 		E2DFBB46262C7716006FAAD6 /* UISearchController */ = {
 			isa = PBXGroup;
 			children = (
@@ -363,7 +372,6 @@
 				E2A0C130262F50980091E6EC /* MainSplitViewController.swift */,
 				E2DFBB57262CA85B006FAAD6 /* MainNavigationController.swift */,
 				E205FA0D262A0AC10080A5F5 /* MainViewController.swift */,
-				E2DFBB43262C7710006FAAD6 /* CommonArtistListViewController.swift */,
 			);
 			path = UIViewController;
 			sourceTree = "<group>";
